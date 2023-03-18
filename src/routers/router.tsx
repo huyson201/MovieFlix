@@ -7,6 +7,8 @@ import App from "../App";
 import Home from "../pages/Home/Home";
 import Detail from "../pages/Detail/Detail";
 import ListMovie from "../pages/ListMoive/ListMovie";
+import Search from "../pages/Search/Search";
+import { Suspense } from "react";
 
 const routeObj: RouteObject[] = [
   {
@@ -15,7 +17,7 @@ const routeObj: RouteObject[] = [
     children: [
       {
         index: true,
-        element: <Home />
+        element: <Suspense> <Home /></Suspense>
       },
       {
         path: "/detail",
@@ -28,6 +30,10 @@ const routeObj: RouteObject[] = [
       {
         path: "/tv-series",
         element: <ListMovie media_type="tv" key={"tv-series"} />
+      },
+      {
+        path: "/search",
+        element: <Search />
       }
     ]
   }

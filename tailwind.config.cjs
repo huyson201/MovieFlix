@@ -12,7 +12,9 @@ module.exports = {
       colors: {
         "dark-teal": "#00acc1",
         "light-gray": "#bbbbbb",
-        "black-2": '#111'
+        "black-2": '#111',
+        "blue-gray": "#212529",
+        "blue-gray-2": "#2c3237"
       },
       screens: {
         "xs": "460px"

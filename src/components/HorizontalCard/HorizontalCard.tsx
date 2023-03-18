@@ -41,11 +41,11 @@ const HorizontalCard = ({ data, mediaType }: Props) => {
 
     }, [data])
     return (
-        <div className="card hover:scale-110 transition-transform duration-300 overflow-hidden rounded-xl" >
+        <div className="card hover:scale-105 transition-transform duration-300 overflow-hidden rounded-xl" >
             <a href="#" className='w-full block h-full'>
-                <div className='list__card-content  min-h-[240px]'>
+                <div className='list__card-content  h-[280px]'>
                     <img className='w-full h-full block object-cover' src={originalImage(data.poster_path)} alt="card" />
-                    <div className='absolute bottom-0  py-3 left-0 w-full px-3 z-[5]'>
+                    <div className='absolute bottom-0  py-3 left-0 w-full px-3 z-20'>
                         <div className='text-white block font-light text-[14px] hover:text-dark-teal transition-colors duration-300'>{parserData.name}</div>
                         <div className='flex items-end  text-light-gray text-xs'>
                             <span>{(new Date(parserData.date)).getFullYear()}</span>

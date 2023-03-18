@@ -4,14 +4,10 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination } from 'swiper';
 import SwiperCore, { Autoplay } from 'swiper'
 
-import banner1 from '../../assets/images/baner1.jpg'
-import banner2 from '../../assets/images/baner2.jpg'
-import banner3 from '../../assets/images/baner3.jpg'
-import card from '../../assets/images/card.jpg'
 
 import { FaStar } from 'react-icons/fa';
 import { BsDot, BsFillPlayFill } from 'react-icons/bs'
-import { MdOutlineFavoriteBorder } from 'react-icons/md'
+import { MdLiveTv, MdOutlineFavoriteBorder } from 'react-icons/md'
 import Wrapper from '../../components/Wrapper/Wrapper';
 import SocialList from '../../components/SocialList/SocialList';
 import GridCard from '../../components/GridCard/GridCard';
@@ -24,11 +20,15 @@ import { originalImage } from '../../services/apiConfigs';
 import { useQuery } from '@tanstack/react-query';
 import { Genres } from '../../Types/Genres';
 import getGenres from '../../Helpers/getGenres';
+import { AiFillPlayCircle } from 'react-icons/ai';
+import classNames from 'classnames';
 
 SwiperCore.use([Autoplay])
 type Props = {}
 
 const Home = (props: Props) => {
+    const [topRatingSelect, setTopRatingSelect] = useState<"movie" | "tv">("movie")
+    const [popularSelect, setPopularSelect] = useState<"movie" | "tv">("movie")
 
     const genresMovieQuery = useQuery({
         queryKey: ["genres_movie"],
@@ -46,24 +46,20 @@ const Home = (props: Props) => {
         queryFn: () => tmdbApi.getTrendingMovies()
     })
 
-    const popularMVQuery = useQuery({
-        queryKey: ["popular_mv"],
-        queryFn: () => tmdbApi.getList<Movie>("movie", "popular")
+
+
+
+    const topRatedQuery = useQuery({
+        queryKey: ["top_rated", topRatingSelect],
+        queryFn: () => tmdbApi.getList<Movie | TV>(topRatingSelect, "top_rated")
+
     })
 
-    const popularTVQuery = useQuery({
-        queryKey: ["popular_tv"],
-        queryFn: () => tmdbApi.getList<TV>("tv", "popular")
-    })
+    const popularQuery = useQuery({
+        queryKey: ["popular", popularSelect],
+        queryFn: () => tmdbApi.getList<Movie | TV>(popularSelect, "popular"),
+        suspense: true
 
-    const topRatedMovieQuery = useQuery({
-        queryKey: ["top_rated_movie"],
-        queryFn: () => tmdbApi.getList<Movie>("movie", "top_rated")
-    })
-
-    const topRatedTVQuery = useQuery({
-        queryKey: ["top_rated_tv"],
-        queryFn: () => tmdbApi.getList<Movie>("tv", "top_rated")
     })
 
     const latestMovieQuery = useQuery({
@@ -75,6 +71,7 @@ const Home = (props: Props) => {
         queryKey: ["latest_tv", { page: 1 }],
         queryFn: () => tmdbApi.getDiscoverList<TV>("tv")
     })
+
 
 
     return (
@@ -186,9 +183,13 @@ const Home = (props: Props) => {
 
                 <section >
                     <Wrapper>
-                        <h2 className='text-light-gray py-1 text-2xl relative after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-16 after:h-[1px] after:bg-white/40'>Top Rating Movies </h2>
+                        <h2 className='text-light-gray flex py-1 text-2xl relative after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-16 after:h-[1px] after:bg-white/40'>
+                            <span>Top Rating</span>
+                            <button onClick={() => setTopRatingSelect("movie")} className={classNames('flex ml-6 items-center justify-center text-xs gap-1 font-medium bg-blue-gray hover:bg-blue-gray-2 transition duration-300  p-2 rounded [&.active]:bg-dark-teal [&.active]:text-white ', { active: topRatingSelect === 'movie' })}><AiFillPlayCircle className='text-xl' /> Movies</button>
+                            <button onClick={() => setTopRatingSelect("tv")} className={classNames('flex ml-2 items-center justify-center text-xs gap-1 font-medium bg-blue-gray hover:bg-blue-gray-2 transition duration-300  p-2 rounded [&.active]:bg-dark-teal [&.active]:text-white ', { active: topRatingSelect === 'tv' })}><MdLiveTv className='text-xl' /> <span className='mt-0.5'>TV-Series</span></button>
+                        </h2>
                         {
-                            topRatedMovieQuery.data && <ListMovieHorizontal mediaType='movie' className='pb-8 pt-6' data={topRatedMovieQuery.data?.data.results} />
+                            topRatedQuery.data && <ListMovieHorizontal mediaType={topRatingSelect} className='pb-8 pt-6' data={(topRatedQuery.data.data.results as Movie[]) || (topRatedQuery.data.data.results as TV[])} />
                         }
                     </Wrapper>
 
@@ -196,29 +197,13 @@ const Home = (props: Props) => {
 
                 <section >
                     <Wrapper>
-                        <h2 className='text-light-gray py-1 text-2xl relative after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-16 after:h-[1px] after:bg-white/40'>Popular Movies </h2>
+                        <h2 className='text-light-gray flex py-1 text-2xl relative after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-16 after:h-[1px] after:bg-white/40'>
+                            <span>Popular</span>
+                            <button onClick={() => setPopularSelect("movie")} className={classNames('flex ml-6 items-center justify-center text-xs gap-1 font-medium bg-blue-gray hover:bg-blue-gray-2 transition duration-300  p-2 rounded [&.active]:bg-dark-teal [&.active]:text-white ', { active: popularSelect === 'movie' })}><AiFillPlayCircle className='text-xl' /> Movies</button>
+                            <button onClick={() => setPopularSelect("tv")} className={classNames('flex ml-2 items-center justify-center text-xs gap-1 font-medium bg-blue-gray hover:bg-blue-gray-2 transition duration-300  p-2 rounded [&.active]:bg-dark-teal [&.active]:text-white ', { active: popularSelect === 'tv' })}><MdLiveTv className='text-xl' /> <span className='mt-0.5'>TV-Series</span></button>
+                        </h2>
                         {
-                            popularMVQuery.data && <ListMovieHorizontal mediaType='movie' className='pb-8 pt-6' data={popularMVQuery.data?.data.results} />
-                        }
-                    </Wrapper>
-
-                </section>
-
-                <section >
-                    <Wrapper>
-                        <h2 className='text-light-gray py-1 text-2xl relative after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-16 after:h-[1px] after:bg-white/40'>Top Rating TV</h2>
-                        {
-                            topRatedTVQuery.data && <ListMovieHorizontal mediaType='tv' className='pb-8 pt-6' data={topRatedTVQuery.data?.data.results} />
-                        }
-                    </Wrapper>
-
-                </section>
-
-                <section >
-                    <Wrapper>
-                        <h2 className='text-light-gray py-1 text-2xl relative after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-16 after:h-[1px] after:bg-white/40'>Popular TV</h2>
-                        {
-                            popularTVQuery.data && <ListMovieHorizontal mediaType='tv' className='pb-8 pt-6' data={popularTVQuery.data?.data.results} />
+                            popularQuery.data && <ListMovieHorizontal mediaType={popularSelect} className='pb-8 pt-6' data={(popularQuery.data.data.results as Movie[]) || (popularQuery.data.data.results as TV[])} />
                         }
                     </Wrapper>
 
@@ -229,11 +214,11 @@ const Home = (props: Props) => {
                     <Wrapper>
                         <h2 className='text-light-gray py-1 text-2xl relative after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-16 after:h-[1px] after:bg-white/40'>Movies </h2>
 
-                        <GridContainer>
+                        <GridContainer className='lg:gap-x-3 gap-y-6 gap-x-2'>
                             {
                                 latestMovieQuery.data && latestMovieQuery.data.data.results.map((movie, index) => {
                                     return (
-                                        <GridCard key={movie.id + `-${Math.random().toString()}`} mediaType='movie' data={movie} />
+                                        <HorizontalCard key={movie.id + `-${Math.random().toString()}`} mediaType='movie' data={movie} />
                                     )
                                 })
                             }
@@ -245,11 +230,12 @@ const Home = (props: Props) => {
                     <Wrapper>
                         <h2 className='text-light-gray py-1 text-2xl relative after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-16 after:h-[1px] after:bg-white/40'>TV-Series </h2>
 
-                        <GridContainer>
+                        <GridContainer className='lg:gap-x-3 gap-y-6 gap-x-2'>
                             {
                                 latestTVQuery.data && latestTVQuery.data.data.results.map((tv, index) => {
+                                    if (!tv.poster_path) return
                                     return (
-                                        <GridCard key={tv.id + `-${Math.random().toString()}`} mediaType='tv' data={tv} />
+                                        <HorizontalCard key={tv.id + `-${Math.random().toString()}`} mediaType='tv' data={tv} />
                                     )
                                 })
                             }
