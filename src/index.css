@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer{
+    body{
+        @apply font-poppins;
+    }
+}
+
+.header .menu{
+    @apply -translate-x-full  z-50 opacity-0 duration-300 md:opacity-100 md:translate-x-0 flex fixed flex-col h-[100vh] md:h-auto bg-black md:bg-transparent top-0 left-0 justify-center items-center gap-12 w-60 md:static  md:flex-row md:gap-4  md:ml-8;
+}
+
+.header .menu.active{
+    @apply translate-x-0 opacity-100;
+}
+
+.menu-items{
+    @apply text-white md:text-white/50 font-medium md:font-light hover:text-dark-teal transition-colors duration-300 ease-out cursor-pointer text-[16px];
+}   
+
+
+.hero-slide{
+    @apply 
+            md:h-[36rem] 
+            bg-no-repeat bg-cover relative bg-center
+            sm:h-[33rem]
+            h-[26rem]
+            before:content-[''] before:absolute before:w-full before:h-full before:top-0 before:left-0 before:z-[2] 
+            before:bg-gradient-to-t from-black-2 via-black-2/20 to-black/80;
+}
+
+.hero-slide .slide-content{
+    @apply absolute bottom-12 left-6 md:left-0 lg:left-8 z-0;
+}
+
+.hero-slide .banner-btn{
+    @apply flex items-center justify-center w-[140px] sm:w-[160px] py-2 border border-solid  text-sm rounded-full gap-2  font-light transition-all duration-300 ease-in;
+}
+
+.swiper-pagination{
+    @apply z-[3];
+}
+.swiper-pagination-bullet{
+    @apply bg-white/60;
+}
+
+.swiper-pagination-bullet.swiper-pagination-bullet-active{
+    @apply bg-dark-teal;
+}
+
+
+/* list movie */
+
+.list__card-content{
+    @apply w-full relative  after:content-[""] after:top-0 
+    after:left-0 after:absolute after:w-full after:h-full after:z-10  after:bg-gradient-to-t from-black/90  to-black/10;
+}
+
+/* detail page */
+.detail-page .detail{
+
+    @apply pt-24 pb-4 relative bg-no-repeat bg-cover bg-center after:content-[""] after:absolute after:left-0 after:bottom-0 after:w-full after:h-full
+            after:bg-gradient-to-t after:from-black-2  after:to-black-2/70;
+}
+
+/* pagination */
+.rc-pagination-item a, 
+.rc-pagination-prev a, 
+.rc-pagination-next a{
+    @apply w-10 h-8 px-1 rounded text-[#6b747c] bg-[#2f343a] flex items-center justify-center font-light cursor-pointer;
+}
+.rc-pagination-item-active a{
+    @apply bg-dark-teal text-black;
+
+}
+.rc-pagination-jump-next-custom-icon{
+    @apply text-[#6b747c] tracking-widest
+}
+
+.checkbox:checked ~ label::before{
+    content: none;
+} 
+.checkbox:checked ~ label .icons{
+    display: block;
+}
+
+/* dropdown scrollbar */
+.dropdown-content::-webkit-scrollbar{
+    @apply w-[2px];
+}
+
+.dropdown-content::-webkit-scrollbar-thumb{
+    @apply bg-gray-600 rounded-md;
+}
