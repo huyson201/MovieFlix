@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import Wrapper from '../../components/Wrapper/Wrapper'
 import GridCard from '../../components/GridCard/GridCard'
 import Pagination from '../../components/Pagination/Pagination'
@@ -53,8 +53,13 @@ const ListMovie = ({ media_type }: Props) => {
 
     const { data } = useQuery({
         queryKey: [`latest_${media_type}`, params],
-        queryFn: () => tmdbApi.getDiscoverList<Movie | TV>(media_type, params)
+        queryFn: () => tmdbApi.getDiscoverList<Movie | TV>(media_type, params),
+        keepPreviousData: true
     })
+
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" })
+    }, [data])
 
     const handleOnFilter = (data: FilterData) => {
         let search: any = {}

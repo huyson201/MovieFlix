@@ -12,6 +12,6 @@ export interface Country {
 }
 
 export const mediaDisplayName = {
-    "movie": "Movie",
+    "movie": "Movies",
     "tv": "TV-Series"
 }

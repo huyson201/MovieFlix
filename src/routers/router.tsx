@@ -20,8 +20,12 @@ const routeObj: RouteObject[] = [
         element: <Suspense> <Home /></Suspense>
       },
       {
-        path: "/detail",
-        element: <Detail />
+        path: "/movies/:name/:id",
+        element: <Detail mediaType="movie" />
+      },
+      {
+        path: "/tv-series/:name/:id",
+        element: <Detail mediaType="tv" />
       },
       {
         path: "/movies",

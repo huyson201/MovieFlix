@@ -26,9 +26,10 @@ const ListMovieHorizontal = (props: Props) => {
         >
             {
                 props.data.map((movie, index) => {
+                    if (!movie.poster_path) return
                     return (
                         <SwiperSlide className='w-44 pr-4 self-stretch' key={movie.id.toString() + `-${Math.random()}`}>
-                            <HorizontalCard mediaType={props.mediaType} data={movie} />
+                            <HorizontalCard mediaType={props.mediaType} size='normal' data={movie} />
                         </SwiperSlide>
                     )
                 })

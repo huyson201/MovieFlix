@@ -7,7 +7,7 @@ import SwiperCore, { Autoplay } from 'swiper'
 
 import { FaStar } from 'react-icons/fa';
 import { BsDot, BsFillPlayFill } from 'react-icons/bs'
-import { MdLiveTv, MdOutlineFavoriteBorder } from 'react-icons/md'
+import { MdKeyboardArrowRight, MdLiveTv, MdOutlineFavoriteBorder } from 'react-icons/md'
 import Wrapper from '../../components/Wrapper/Wrapper';
 import SocialList from '../../components/SocialList/SocialList';
 import GridCard from '../../components/GridCard/GridCard';
@@ -22,6 +22,7 @@ import { Genres } from '../../Types/Genres';
 import getGenres from '../../Helpers/getGenres';
 import { AiFillPlayCircle } from 'react-icons/ai';
 import classNames from 'classnames';
+import { Link } from 'react-router-dom';
 
 SwiperCore.use([Autoplay])
 type Props = {}
@@ -47,19 +48,17 @@ const Home = (props: Props) => {
     })
 
 
-
-
     const topRatedQuery = useQuery({
         queryKey: ["top_rated", topRatingSelect],
-        queryFn: () => tmdbApi.getList<Movie | TV>(topRatingSelect, "top_rated")
+        queryFn: () => tmdbApi.getList<Movie | TV>(topRatingSelect, "top_rated"),
+        keepPreviousData: true
 
     })
 
     const popularQuery = useQuery({
         queryKey: ["popular", popularSelect],
         queryFn: () => tmdbApi.getList<Movie | TV>(popularSelect, "popular"),
-        suspense: true
-
+        keepPreviousData: true
     })
 
     const latestMovieQuery = useQuery({
@@ -189,7 +188,7 @@ const Home = (props: Props) => {
                             <button onClick={() => setTopRatingSelect("tv")} className={classNames('flex ml-2 items-center justify-center text-xs gap-1 font-medium bg-blue-gray hover:bg-blue-gray-2 transition duration-300  p-2 rounded [&.active]:bg-dark-teal [&.active]:text-white ', { active: topRatingSelect === 'tv' })}><MdLiveTv className='text-xl' /> <span className='mt-0.5'>TV-Series</span></button>
                         </h2>
                         {
-                            topRatedQuery.data && <ListMovieHorizontal mediaType={topRatingSelect} className='pb-8 pt-6' data={(topRatedQuery.data.data.results as Movie[]) || (topRatedQuery.data.data.results as TV[])} />
+                            topRatedQuery.data && <ListMovieHorizontal mediaType={topRatingSelect} className='pb-8 pt-6' data={(topRatedQuery.data.data.results as Movie[]) || (topRatedQuery.data.data.results as TV[]) || []} />
                         }
                     </Wrapper>
 
@@ -203,7 +202,7 @@ const Home = (props: Props) => {
                             <button onClick={() => setPopularSelect("tv")} className={classNames('flex ml-2 items-center justify-center text-xs gap-1 font-medium bg-blue-gray hover:bg-blue-gray-2 transition duration-300  p-2 rounded [&.active]:bg-dark-teal [&.active]:text-white ', { active: popularSelect === 'tv' })}><MdLiveTv className='text-xl' /> <span className='mt-0.5'>TV-Series</span></button>
                         </h2>
                         {
-                            popularQuery.data && <ListMovieHorizontal mediaType={popularSelect} className='pb-8 pt-6' data={(popularQuery.data.data.results as Movie[]) || (popularQuery.data.data.results as TV[])} />
+                            popularQuery.data && <ListMovieHorizontal mediaType={popularSelect} className='pb-8 pt-6' data={(popularQuery.data.data.results as Movie[]) || (popularQuery.data.data.results as TV[]) || []} />
                         }
                     </Wrapper>
 
@@ -212,7 +211,10 @@ const Home = (props: Props) => {
 
                 <section className='top-rated py-6 bg-black-2'>
                     <Wrapper>
-                        <h2 className='text-light-gray py-1 text-2xl relative after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-16 after:h-[1px] after:bg-white/40'>Movies </h2>
+                        <h2 className='text-light-gray flex py-1 text-2xl relative after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-16 after:h-[1px] after:bg-white/40'>
+                            <span>Movies</span>
+                            <Link to={"/movies"} className='flex ml-auto items-center text-sm text-dark-teal transition-opacity duration-300 hover:opacity-75'>View all <span className='text-base bg-dark-teal rounded-full text-black ml-2'><MdKeyboardArrowRight /></span></Link>
+                        </h2>
 
                         <GridContainer className='lg:gap-x-3 gap-y-6 gap-x-2'>
                             {
@@ -228,7 +230,10 @@ const Home = (props: Props) => {
 
                 <section className='top-rated py-6 bg-black-2'>
                     <Wrapper>
-                        <h2 className='text-light-gray py-1 text-2xl relative after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-16 after:h-[1px] after:bg-white/40'>TV-Series </h2>
+                        <h2 className='text-light-gray flex py-1 text-2xl relative after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-16 after:h-[1px] after:bg-white/40'>
+                            <span>TV-Series</span>
+                            <Link to={"/tv-series"} className='flex ml-auto items-center text-sm text-dark-teal transition-opacity duration-300 hover:opacity-75'>View all <span className='text-base bg-dark-teal rounded-full text-black ml-2'><MdKeyboardArrowRight /></span></Link>
+                        </h2>
 
                         <GridContainer className='lg:gap-x-3 gap-y-6 gap-x-2'>
                             {
