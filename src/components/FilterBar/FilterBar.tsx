@@ -115,12 +115,12 @@ const FilterBar = ({ media_type, onFilter }: Props) => {
 
 
     return (
-        <div className='mt-6 flex items-center gap-2'>
+        <div className='mt-6 flex items-center flex-wrap xs:flex-nowrap gap-2'>
 
             <Dropdown grid key={1} selected={genresSelectedString} buttonIcon={<FaFolderOpen className='text-sm' />} title='Genre' renderItems={renderGenre} />
-            <Dropdown grid key={2} selected={languagesSelectedString} buttonIcon={<FaGlobeAmericas className='text-sm' />} title='Languages' renderItems={renderCountry} />
+            <Dropdown grid key={2} selected={languagesSelectedString} dropContentClassName='languages-drop' buttonIcon={<FaGlobeAmericas className='text-sm' />} title='Languages' renderItems={renderCountry} />
             <Dropdown key={3} selected={yearSelectedString} buttonIcon={<FaCalendarAlt className='text-sm' />} title='Years' renderItems={renderYear} />
-            <button onClick={() => onFilter && onFilter(filterData)} className=' px-2 py-1.5 hover:opacity-75 cursor-pointer transition-opacity duration-300 h-full font-light text-sm gap-x-1 flex justify-center items-center bg-dark-teal rounded'><FaFilter className='text-base' />Filter</button>
+            <button onClick={() => onFilter && onFilter(filterData)} className=' w-[48%] xs:w-auto px-2 py-1.5 hover:opacity-75 cursor-pointer transition-opacity duration-300 h-full font-light text-sm gap-x-1 flex justify-center items-center bg-dark-teal rounded'><FaFilter className='text-base' />Filter</button>
         </div>
     )
 }

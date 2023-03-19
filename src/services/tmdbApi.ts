@@ -45,6 +45,10 @@ const tmdbApi = {
     getRecommendations: <T>(media_type: TmdbMediaType, id: number, params?: any) => {
         const url = `${media_type}/${id}/recommendations`
         return axiosInstance.get<Paginate<T>>(url, { params })
+    },
+    getVideo: <T>(media_type?: TmdbMediaType, id?: number) => {
+        const url = `${media_type}/${id}/videos`
+        return axiosInstance.get<T>(url)
     }
 
 }

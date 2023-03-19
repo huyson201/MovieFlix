@@ -21,7 +21,9 @@
 .menu-items{
     @apply text-white md:text-white/50 font-medium md:font-light hover:text-dark-teal transition-colors duration-300 ease-out cursor-pointer text-[16px];
 }   
-
+.menu-items.active{
+    @apply text-dark-teal;
+}
 
 .hero-slide{
     @apply 
@@ -57,7 +59,7 @@
 
 .list__card-content{
     @apply w-full relative  after:content-[""] after:top-0 
-    after:left-0 after:absolute after:w-full after:h-full after:z-10  after:bg-gradient-to-t from-black/90  to-black/10;
+    after:left-0 after:absolute after:w-full after:h-full after:z-[5]  after:bg-gradient-to-t from-black/90  to-black/10;
 }
 
 /* detail page */
@@ -95,4 +97,9 @@
 
 .dropdown-content::-webkit-scrollbar-thumb{
     @apply bg-gray-600 rounded-md;
+}
+
+
+.languages-drop{
+    @apply right-0 xs:left-0;
 }

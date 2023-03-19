@@ -8,6 +8,7 @@ import { Movie, TV } from '../../Types/Movie'
 import { useSearchParams } from 'react-router-dom'
 import FilterBar, { FilterData } from '../../components/FilterBar/FilterBar'
 import queryString from 'query-string'
+import HorizontalCard from '../../components/HorizontalCard/HorizontalCard'
 
 
 type Props = {
@@ -86,7 +87,7 @@ const ListMovie = ({ media_type }: Props) => {
                         {
                             data && data.data.results.map((item, index) => {
                                 return (
-                                    <GridCard data={item} mediaType={media_type} key={item.id + `${Math.random().toString()}`} />
+                                    <HorizontalCard data={item} mediaType={media_type} key={item.id + `${Math.random().toString()}`} />
                                 )
                             })
                         }

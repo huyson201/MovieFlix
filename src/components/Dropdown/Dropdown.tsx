@@ -6,11 +6,12 @@ type Props = {
     buttonIcon?: React.ReactElement
     title: string,
     grid?: boolean,
-    selected?: string
+    selected?: string,
+    dropContentClassName?: string
     renderItems: () => any
 }
 
-const Dropdown = ({ buttonIcon, title, renderItems, grid, selected = 'All' }: Props) => {
+const Dropdown = ({ buttonIcon, title, renderItems, grid, dropContentClassName, selected = 'All' }: Props) => {
     const [active, setActive] = useState<boolean>(false)
     const buttonRef = useRef<HTMLButtonElement>(null)
     const dropContentRef = useRef<HTMLDivElement>(null)
@@ -33,7 +34,7 @@ const Dropdown = ({ buttonIcon, title, renderItems, grid, selected = 'All' }: Pr
     }, [buttonRef, dropContentRef])
 
     return (
-        <div className="relative" >
+        <div className="relative w-[48%] xs:w-auto" >
             <button
                 ref={buttonRef}
                 className={classNames(`flex items-center gap-1 whitespace-nowrap rounded bg-[#212529] px-4 py-2 text-xs 
@@ -41,6 +42,9 @@ const Dropdown = ({ buttonIcon, title, renderItems, grid, selected = 'All' }: Pr
                 focus:outline-none focus:ring-0 active:bg-primary-700 
                 capitalize
                 font-normal hover:bg-[#2c3237]
+                w-full
+                justify-center
+                xs:justify-start
                 motion-reduce:transition-none`,)}
                 type="button"
                 onClick={handleClick}
@@ -57,12 +61,12 @@ const Dropdown = ({ buttonIcon, title, renderItems, grid, selected = 'All' }: Pr
             <div
                 ref={dropContentRef}
                 data-te-dropdown-show
-                className={classNames(`absolute z-10 float-left m-0 hidden 
+                className={classNames(`absolute z-20 float-left m-0 hidden 
                 list-none overflow-hidden rounded-[6px] border-none
                 mt-1 bg-[#212529] p-3  
                  gap-x-1 dropdown-content
                  ${!grid && 'h-80 overflow-y-auto scroll-bar'}
-                 flex-wrap ${grid ? 'w-[600px] [&.active]:flex' : 'w-max [&.active]:block'}`, { active })}
+                 flex-wrap ${grid ? 'w-[200%] sm:w-[400px] md:w-[600px] [&.active]:flex' : 'w-max [&.active]:block'}`, { active }, dropContentClassName)}
                 aria-labelledby="dropdownMenuButton1"
                 data-te-dropdown-menu-ref>
 
@@ -90,7 +94,7 @@ export const DropItem = ({ id, name, value, check, onChangeEvent }: DropItemsPro
         }
     }
     return (
-        <div className='flex items-center w-[24%]'>
+        <div className='flex items-center w-[48%] sm:w-[32%] md:w-[24%]'>
             <input type="checkbox" id={`${id}`} onChange={handleOnChange} className='checkbox peer hidden' checked={check} value={value} />
             <label htmlFor={`${id}`} className='flex h-8 gap-2 peer-checked:px-0 peer-checked:gap-0 px-2 w-full items-center text-white/60 text-xs hover:bg-[#16181b] 
                             py-[2px] transition duration-300 rounded cursor-pointer
@@ -115,7 +119,7 @@ export const DropItemSimple = ({ id, name, value, check, fieldName, onChangeEven
     }
 
     return (
-        <div className='flex items-center w-max'>
+        <div className='flex items-center w-full xs:w-max'>
             <input type="radio" id={`${id}`} onChange={handleOnChange} name={fieldName || "check-radio"} className='checkbox peer hidden' checked={check} value={value} />
             <label htmlFor={`${id}`} className='flex h-8 gap-2 peer-checked:px-2 peer-checked:gap-0 px-4 w-full items-center text-white/60 text-xs hover:bg-[#16181b] 
                             py-[2px] transition duration-300 rounded cursor-pointer

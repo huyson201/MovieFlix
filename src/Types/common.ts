@@ -15,3 +15,8 @@ export const mediaDisplayName = {
     "movie": "Movies",
     "tv": "TV-Series"
 }
+
+export const urlMap = {
+    "movie": "/movies/",
+    "tv": "/tv-series/",
+}
