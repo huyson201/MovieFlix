@@ -15,6 +15,7 @@ import VideoModal from '../../components/VideoModal/VideoModal'
 import Error404Page from '../Error/Error404Page'
 import axios, { AxiosError, AxiosResponse } from 'axios'
 import Error500Page from '../Error/Error500Page'
+import Loader from '../../components/Loader/Loader'
 type Props = {
     mediaType: TmdbMediaType
 }
@@ -22,7 +23,6 @@ type Props = {
 const Detail = ({ mediaType }: Props) => {
     const [trailer, setTrailer] = useState<{ mediaType: TmdbMediaType, id: number }>()
     const [showPopup, setShowPopup] = useState<boolean>(false)
-    const [errorPage, setErrorPage] = useState<number>()
     const { id } = useParams()
     if (!id || !Number(id)) return <Error404Page />
 
@@ -35,18 +35,7 @@ const Detail = ({ mediaType }: Props) => {
     const queryCast = useQuery({
         queryKey: ["cast", mediaType, id],
         queryFn: () => tmdbApi.getCast<{ cast: Cast[], crew: Crew[] }>(mediaType, +id),
-        enabled: id !== undefined,
-        onError(err) {
-            if (axios.isAxiosError(err)) {
-                if ((error as AxiosError).response?.status === 404) {
-                    setErrorPage(404)
-                } else {
-                    setErrorPage(500)
-                }
-            } else {
-                setErrorPage(500)
-            }
-        },
+        enabled: id !== undefined
     })
 
     const recommendsQuery = useQuery({
@@ -72,16 +61,14 @@ const Detail = ({ mediaType }: Props) => {
         setShowPopup(true)
     }
 
-    if (status === "loading") return <div>loading...</div>
-    if (!data || status === "error") return <div>error...</div>
-
-    if (errorPage) {
-        if (errorPage === 404) {
+    if (status === "loading") return <Loader />
+    if (!data || error) {
+        if (axios.isAxiosError(error) && (error as AxiosError).response?.status === 404) {
             return <Error404Page />
         }
-
         return <Error500Page />
     }
+
 
     return (
         <div className='detail-page' >
