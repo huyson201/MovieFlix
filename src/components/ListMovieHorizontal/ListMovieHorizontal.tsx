@@ -1,11 +1,11 @@
 import classNames from 'classnames'
 import React from 'react'
-import { Pagination } from 'swiper'
+import { Pagination, Navigation } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import HorizontalCard from '../HorizontalCard/HorizontalCard'
-import card from '../../assets/images/card.jpg'
 import { Movie, TV, TrendingVideo } from '../../Types/Movie'
 import { MediaType } from '../../services/tmdbApi'
+import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md'
 
 type Props = {
     className?: string,
@@ -13,14 +13,27 @@ type Props = {
     mediaType: MediaType
 }
 
+const NextButton = () => {
+    return (<>
+        <div>Next</div>
+    </>)
+}
 const ListMovieHorizontal = (props: Props) => {
+    const navigationPrevRef = React.useRef(null)
+    const navigationNextRef = React.useRef(null)
     return (
+
         <Swiper
             slidesPerView={"auto"}
-            modules={[Pagination]}
+            modules={[Navigation, Pagination]}
             pagination={{
                 dynamicBullets: true,
             }}
+            navigation={{
+                prevEl: navigationPrevRef.current,
+                nextEl: navigationNextRef.current,
+            }}
+            rewind={true}
             className={classNames(props.className)}
 
         >
@@ -34,6 +47,8 @@ const ListMovieHorizontal = (props: Props) => {
                     )
                 })
             }
+            <div ref={navigationNextRef} className='absolute w-28 h-28 bg-black/30 pl-1 hover:bg-black transition duration-300 rounded-full translate-x-[65%] flex justify-start items-center cursor-pointer top-2/4 right-0 -translate-y-2/4 hover:text-white text-white/30 z-10 text-4xl'><MdKeyboardArrowRight /></div>
+            <div ref={navigationPrevRef} className='absolute w-28 h-28 bg-black/30 pr-1 hover:bg-black transition duration-300 rounded-full -translate-x-[65%] flex justify-end items-center cursor-pointer top-2/4 left-0 -translate-y-2/4 hover:text-white text-white/30 z-10 text-4xl'><MdKeyboardArrowLeft /> </div>
         </Swiper>
     )
 }

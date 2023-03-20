@@ -10,6 +10,9 @@ import { Movie, TV } from '../../Types/Movie'
 import HorizontalCard from '../../components/HorizontalCard/HorizontalCard'
 import Pagination from '../../components/Pagination/Pagination'
 import { useSearchParams } from 'react-router-dom'
+import axios, { AxiosError } from 'axios'
+import Error404Page from '../Error/Error404Page'
+import Error500Page from '../Error/Error500Page'
 
 type Props = {}
 
@@ -44,17 +47,25 @@ const Search = (props: Props) => {
         setSubmit(true)
     }
 
-    const { data } = useQuery({
+    const { data, error } = useQuery({
         queryKey: [`search`, media, page],
         queryFn: () => tmdbApi.search<Movie | TV>(media, searchKey, { page }),
         enabled: submit
     })
+
+    if (error) {
+        if (axios.isAxiosError(error && (error as AxiosError).response?.status === 404)) {
+            return <Error404Page />
+        }
+
+        return <Error500Page />
+    }
     return (
         <div className='pt-20 pb-12 min-h-[100vh] bg-black-2'>
             <Wrapper>
                 <form action='#' onSubmit={handleSubmit}>
                     <div className="flex relative  bg-[#212529]  rounded">
-                        <button id="dropdown-button" data-dropdown-toggle="dropdown" className="flex-shrink-0 z-10 inline-flex 
+                        <button id="dropdown-button" data-dropdown-toggle="dropdown" className="flex-shrink-0  inline-flex 
                         items-center py-3 md:py-5 px-2 sm:px-4 text-sm font-medium text-center
                          text-white/70 border-r border-white/70 bg-transparent" type="button" onClick={() => setShowDrop(prev => !prev)}>{mediaDisplayName[media]}
                             <svg aria-hidden="true" className="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">

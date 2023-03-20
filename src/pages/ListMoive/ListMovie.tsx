@@ -9,6 +9,9 @@ import { useSearchParams } from 'react-router-dom'
 import FilterBar, { FilterData } from '../../components/FilterBar/FilterBar'
 import queryString from 'query-string'
 import HorizontalCard from '../../components/HorizontalCard/HorizontalCard'
+import axios, { AxiosError } from 'axios'
+import Error404Page from '../Error/Error404Page'
+import Error500Page from '../Error/Error500Page'
 
 
 type Props = {
@@ -52,15 +55,24 @@ const ListMovie = ({ media_type }: Props) => {
 
 
 
-    const { data } = useQuery({
+    const { data, error } = useQuery({
         queryKey: [`latest_${media_type}`, params],
         queryFn: () => tmdbApi.getDiscoverList<Movie | TV>(media_type, params),
         keepPreviousData: true
     })
 
+    if (error) {
+        if (axios.isAxiosError(error && (error as AxiosError).response?.status === 404)) {
+            return <Error404Page />
+        }
+
+        return <Error500Page />
+    }
+
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: "smooth" })
     }, [data])
+
 
     const handleOnFilter = (data: FilterData) => {
         let search: any = {}

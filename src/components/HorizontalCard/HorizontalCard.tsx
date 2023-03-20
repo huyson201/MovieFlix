@@ -48,7 +48,7 @@ const HorizontalCard = ({ data, mediaType, size = 'large' }: Props) => {
     }, [data])
     return (
         <div className="card hover:scale-105 transition-transform duration-300 overflow-hidden rounded-xl" >
-            <Link to={`${urlMap[parserData.media_type]}${encodeURIComponent(parserData.name?.toLowerCase()).replace(/%20/g, '-') || ""}/${data.id}`} className='w-full block h-full'>
+            <Link to={`${urlMap[parserData.media_type]}/${encodeURIComponent(parserData.name?.toLowerCase()).replace(/%20/g, '-') || ""}/${data.id}`} className='w-full block h-full'>
                 <div className={classNames(`list__card-content`, { 'h-60': size === 'normal', 'h-[280px]': size === 'large' })}>
                     <img className='w-full h-full block object-cover' src={originalImage(data.poster_path)} alt="card" />
                     <div className='absolute bottom-0  py-3 left-0 w-full px-3  z-[6]'>

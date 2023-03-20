@@ -15,7 +15,7 @@ const NavBar = (props: Props) => {
     const matches = useMatches()
 
     const navDark: boolean = useMemo(() => {
-        return matches.some(route => `${route.pathname}/` === urlMap.movie || `${route.pathname}/` === urlMap.tv)
+        return matches.some(route => (Object.keys(urlMap) as Array<keyof typeof urlMap>).some(key => route.pathname === urlMap[key]))
     }, [matches])
 
     useEffect(() => {
