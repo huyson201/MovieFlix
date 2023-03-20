@@ -1,5 +1,4 @@
 import { API_BASE_URL, API_KEY } from "./apiConfigs";
-import queryString from "query-string";
 import axios from "axios";
 
 declare module 'axios' {
