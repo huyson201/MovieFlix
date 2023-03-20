@@ -103,3 +103,7 @@
 .languages-drop{
     @apply right-0 xs:left-0;
 }
+
+a{
+    -webkit-tap-highlight-color: transparent;
+}

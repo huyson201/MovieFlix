@@ -118,7 +118,7 @@ const Detail = ({ mediaType }: Props) => {
                         recommendsQuery.data && recommendsQuery.data.data.results.length > 0 && <h2 className='text-light-gray text-2xl relative'>Recommends</h2>
                     }
                     {
-                        recommendsQuery.data && <div className='list-movie-horizontal'>
+                        recommendsQuery.data && recommendsQuery.data.data.results.length > 0 && <div className='list-movie-horizontal'>
 
                             {
                                 <ListMovieHorizontal className='pb-8 pt-6' data={(recommendsQuery.data.data.results as Movie[]) || (recommendsQuery.data.data.results as TV[]) || []} mediaType={mediaType} />

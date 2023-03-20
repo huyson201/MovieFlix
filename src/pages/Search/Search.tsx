@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent, useMemo, useState } from 'react'
+import React, { ChangeEvent, FormEvent, useEffect, useMemo, useState } from 'react'
 import Wrapper from '../../components/Wrapper/Wrapper'
 import { AiOutlineSearch } from 'react-icons/ai'
 import { mediaDisplayName } from '../../Types/common'
@@ -20,13 +20,17 @@ const Search = (props: Props) => {
     const [media, setMedia] = useState<"movie" | "tv">("movie")
     const [showDrop, setShowDrop] = useState<boolean>(false)
     const [searchKey, setSearchKey] = useState<string>("")
-    const [submit, setSubmit] = useState<boolean>(false)
 
     const [searchParams, setSearchParams] = useSearchParams()
 
     const page = useMemo(() => {
         let currPage = parseInt(searchParams.get("page") || "1")
         return currPage
+    }, [searchParams])
+
+    const search = useMemo(() => {
+        let search = searchParams.get("q")
+        return search
     }, [searchParams])
 
     const handleSelect = (media: "movie" | "tv") => {
@@ -37,21 +41,23 @@ const Search = (props: Props) => {
     //* handle input change
     const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
         setSearchKey(event.target.value)
-        if (submit) {
-            setSubmit(false)
-        }
     }
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-        setSubmit(true)
+        searchParams.set("q", searchKey)
+        setSearchParams(searchParams)
     }
 
     const { data, error } = useQuery({
-        queryKey: [`search`, media, page],
+        queryKey: [`search`, media, search, page],
         queryFn: () => tmdbApi.search<Movie | TV>(media, searchKey, { page }),
-        enabled: submit
+        enabled: search !== null
     })
+
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" })
+    }, [data])
 
     if (error) {
         if (axios.isAxiosError(error && (error as AxiosError).response?.status === 404)) {
@@ -104,7 +110,7 @@ const Search = (props: Props) => {
                     </GridContainer>
                 </div>
 
-                {data && <Pagination className='mt-12' total={data?.data.total_pages} pageSize={20} />}
+                {data && <Pagination defaultCurrent={1} className='mt-12' total={data?.data.total_pages} pageSize={20} />}
             </Wrapper>
 
 
