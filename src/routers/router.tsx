@@ -2,13 +2,15 @@ import {
   createBrowserRouter,
   RouteObject
 } from "react-router-dom";
-
 import App from "../App";
-import Home from "../pages/Home/Home";
-import Detail from "../pages/Detail/Detail";
-import ListMovie from "../pages/ListMoive/ListMovie";
-import Search from "../pages/Search/Search";
-import { Suspense } from "react";
+import { lazy, Suspense } from "react";
+import Loader from "../components/Loader/Loader";
+
+const ListMovie = lazy(() => import("../pages/ListMoive/ListMovie"))
+const Home = lazy(() => import("../pages/Home/Home"))
+const Detail = lazy(() => import("../pages/Detail/Detail"))
+const Search = lazy(() => import("../pages/Search/Search"))
+const Error404Page = lazy(() => import("../pages/Error/Error404Page"))
 
 const routeObj: RouteObject[] = [
   {
@@ -17,29 +19,37 @@ const routeObj: RouteObject[] = [
     children: [
       {
         index: true,
-        element: <Suspense> <Home /></Suspense>
+        element: <Suspense fallback={<Loader />}> <Home /></Suspense>
       },
       {
         path: "/movies/:name/:id",
-        element: <Detail mediaType="movie" />
+        element: <Suspense fallback={<Loader />}><Detail mediaType="movie" /></Suspense>
       },
       {
         path: "/tv-series/:name/:id",
-        element: <Detail mediaType="tv" />
+        element: <Suspense fallback={<Loader />}> <Detail mediaType="tv" /></Suspense>
       },
       {
         path: "/movies",
-        element: <ListMovie media_type="movie" key={"movie"} />
+        element: <Suspense fallback={<Loader />}> <ListMovie media_type="movie" key={"movie"} /></Suspense>
       },
       {
         path: "/tv-series",
-        element: <ListMovie media_type="tv" key={"tv-series"} />
+        element: <Suspense fallback={<Loader />}> <ListMovie media_type="tv" key={"tv-series"} /></Suspense>
       },
       {
         path: "/search",
-        element: <Search />
+        element: <Suspense fallback={<Loader />}><Search /></Suspense>
       }
     ]
+  },
+  {
+    path: "/notfound",
+    element: <Suspense fallback={<Loader />}> <Error404Page /></Suspense>
+  },
+  {
+    path: "*",
+    element: <Suspense fallback={<Loader />}> <Error404Page /></Suspense>
   }
 ]
 const routers = createBrowserRouter(routeObj)

@@ -13,9 +13,9 @@ import { useQuery } from '@tanstack/react-query';
 import { AiFillPlayCircle } from 'react-icons/ai';
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
-import VideoPopup from '../../components/VideoPopup/VideoPopup';
 import { VideoResult } from '../../Types/Video';
 import HeroSlide from '../../components/HeroSlide/HeroSlide';
+import VideoModal from '../../components/VideoModal/VideoModal';
 
 type Props = {}
 
@@ -64,9 +64,10 @@ const Home = (props: Props) => {
     })
 
     const handleRequestClosePopup = () => {
-        setShowPopup(false)
         setTrailer(undefined)
+        setShowPopup(false)
     }
+
     const handleClickTrailer = (media_type: TmdbMediaType, id: number) => {
         setTrailer({ mediaType: media_type, id })
         setShowPopup(true)
@@ -77,78 +78,6 @@ const Home = (props: Props) => {
     return (
         <div className='home'>
             {/* hero slide */}
-            {/* <div className="hero-box">
-                <Swiper
-                    slidesPerView={1}
-                    modules={[Pagination]}
-                    pagination={true}
-                    autoplay={
-                        {
-                            delay: 5000,
-                            disableOnInteraction: false
-                        }
-                    }
-
-                >
-                    {
-                        trendingQuery.data?.data.results.slice(0, 5).map(movie => {
-                            let genres: Genres[] | undefined = []
-                            if (movie.media_type === 'movie') {
-                                genres = genresMovieQuery.data?.data.genres.filter(genre => movie.genre_ids.includes(genre.id))
-                            }
-                            else {
-                                genres = genresTVQuery.data?.data.genres.filter(genre => movie.genre_ids.includes(genre.id))
-
-                            }
-
-
-
-                            return (
-                                <SwiperSlide key={`${movie.id}-${movie.original_name}`}>
-                                    <div className={`hero-slide`} style={{ backgroundImage: `url(${originalImage(movie.backdrop_path)})` }}>
-                                        <Wrapper className='h-full relative z-10'>
-                                            <div className="slide-content w-full md:w-[65%] pr-6 ">
-                                                <div className="movie-name text-3xl md:text-4xl text-white font-bold  drop-shadow-lg pr-6">{movie.name || movie.title}</div>
-                                                <div className="movie-info flex items-center gap-2 sm:gap-4 md:gap-6 mt-2">
-                                                    <span className="quality px-3 py-0.5 flex items-center rounded bg-dark-teal font-medium text-white text-xl">{movie.media_type === "movie" ? <RiMovie2Fill /> : <MdLiveTv />}</span>
-                                                    <span className="rating flex  gap-1 text-white text-sm">
-                                                        <FaStar size={16} />{movie.vote_average.toFixed(1)}
-                                                    </span>
-
-                                                    <div className="cate">
-                                                        {
-                                                            genres?.map(item => {
-                                                                return (
-                                                                    <a href="#" key={item.id.toString()} className='cates inline-block mr-3 text-xs text-white/60 hover:text-white transition-colors duration-300 ease-out'>{item.name}</a>
-                                                                )
-                                                            })
-                                                        }
-
-                                                    </div>
-
-                                                </div>
-                                                <div className="movie-desc hidden  sm:block mt-4 text-white/50 font-thin text-sm">
-                                                    {movie.overview}
-                                                </div>
-                                                <div className="buttons mt-8 flex gap-6">
-                                                    <Link to={`${urlMap[movie.media_type]}${encodeURIComponent(movie.name?.toLowerCase()).replace(/%20/g, '-') || "na"}/${movie.id}`} className="watch-btn banner-btn  border-dark-teal text-dark-teal  hover:bg-dark-teal hover:text-white ">
-                                                        <BsFillPlayFill size={20} /> Watch now
-                                                    </Link>
-                                                    <button onClick={() => { setShowPopup(true); setTrailer({ mediaType: movie.media_type, id: movie.id }) }} className="add-btn banner-btn  border-white/50 text-white/50 hover:bg-white hover:text-black"><BiMoviePlay size={16} /> Trailer
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </Wrapper>
-
-                                    </div>
-                                </SwiperSlide>
-                            )
-                        })
-                    }
-
-                </Swiper>
-            </div> */}
-
             <HeroSlide onClickTrailer={handleClickTrailer} />
 
             <div className="main-content bg-black-2">
@@ -245,7 +174,7 @@ const Home = (props: Props) => {
 
             </div>
 
-            <VideoPopup requestClosePopup={handleRequestClosePopup} show={showPopup} embed={`https://www.youtube.com/embed/${queryVideos.data?.data.results[0].key || ""}`} />
+            <VideoModal requestClosePopup={handleRequestClosePopup} show={showPopup} embed={trailer ? `https://www.youtube.com/embed/${queryVideos.data?.data.results[0].key || ""}` : "#"} />
         </div>
     )
 }

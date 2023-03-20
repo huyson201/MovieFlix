@@ -1,16 +1,8 @@
-import React from 'react'
-import detailBg from '../../assets/images/detail-bg.webp'
-import detail from '../../assets/images/detail.webp'
-import cast1 from '../../assets/images/cast1.webp'
-import cast2 from '../../assets/images/cast2.webp'
-import cast3 from '../../assets/images/cast3.webp'
-import card from '../../assets/images/card.jpg'
+import React, { useState } from 'react'
 import Wrapper from '../../components/Wrapper/Wrapper'
 import { BsClockHistory } from 'react-icons/bs'
 import { AiFillStar } from 'react-icons/ai'
 import { SlArrowRight } from 'react-icons/sl'
-import { Pagination } from 'swiper'
-import { SwiperSlide, Swiper } from 'swiper/react'
 import tmdbApi, { TmdbMediaType } from '../../services/tmdbApi'
 import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
@@ -18,15 +10,23 @@ import { DetailMovie, DetailTV, Movie, TV, TrendingVideo } from '../../Types/Mov
 import { originalImage } from '../../services/apiConfigs'
 import { Cast, Crew } from '../../Types/Cast'
 import ListMovieHorizontal from '../../components/ListMovieHorizontal/ListMovieHorizontal'
+import { VideoResult } from '../../Types/Video'
+import VideoModal from '../../components/VideoModal/VideoModal'
+import Error404Page from '../Error/Error404Page'
+import axios, { AxiosError, AxiosResponse } from 'axios'
+import Error500Page from '../Error/Error500Page'
 type Props = {
     mediaType: TmdbMediaType
 }
 
 const Detail = ({ mediaType }: Props) => {
+    const [trailer, setTrailer] = useState<{ mediaType: TmdbMediaType, id: number }>()
+    const [showPopup, setShowPopup] = useState<boolean>(false)
+    const [errorPage, setErrorPage] = useState<number>()
     const { id } = useParams()
-    if (!id) return <><div>Error id not found</div></>
+    if (!id || !Number(id)) return <Error404Page />
 
-    const { data, status, } = useQuery({
+    const { data, status, error } = useQuery({
         queryKey: ["detail", mediaType, id],
         queryFn: () => tmdbApi.getDetail<DetailMovie | DetailTV>(mediaType, +id),
         enabled: id !== undefined
@@ -35,7 +35,18 @@ const Detail = ({ mediaType }: Props) => {
     const queryCast = useQuery({
         queryKey: ["cast", mediaType, id],
         queryFn: () => tmdbApi.getCast<{ cast: Cast[], crew: Crew[] }>(mediaType, +id),
-        enabled: id !== undefined
+        enabled: id !== undefined,
+        onError(err) {
+            if (axios.isAxiosError(err)) {
+                if ((error as AxiosError).response?.status === 404) {
+                    setErrorPage(404)
+                } else {
+                    setErrorPage(500)
+                }
+            } else {
+                setErrorPage(500)
+            }
+        },
     })
 
     const recommendsQuery = useQuery({
@@ -44,8 +55,33 @@ const Detail = ({ mediaType }: Props) => {
         enabled: id !== undefined
     })
 
+    const queryVideos = useQuery({
+        queryKey: ["video", trailer],
+        queryFn: () => tmdbApi.getVideo<VideoResult>(trailer?.mediaType, trailer?.id),
+        enabled: trailer?.mediaType !== undefined && trailer.id !== undefined,
+        keepPreviousData: false
+    })
+
+    const handleRequestClosePopup = () => {
+        setTrailer(undefined)
+        setShowPopup(false)
+    }
+
+    const handleClickTrailer = (media_type: TmdbMediaType, id: number) => {
+        setTrailer({ mediaType: media_type, id })
+        setShowPopup(true)
+    }
+
     if (status === "loading") return <div>loading...</div>
     if (!data || status === "error") return <div>error...</div>
+
+    if (errorPage) {
+        if (errorPage === 404) {
+            return <Error404Page />
+        }
+
+        return <Error500Page />
+    }
 
     return (
         <div className='detail-page' >
@@ -60,7 +96,7 @@ const Detail = ({ mediaType }: Props) => {
                             <span className='tracking-widest'>{new Date((data.data as DetailMovie).release_date || (data.data as DetailTV).first_air_date).getFullYear() || "N/A"}</span>
                             <span className='flex items-center gap-2'><BsClockHistory className='text-xl' />{(data.data as DetailMovie).runtime || (data.data as DetailTV).episode_run_time[0] || 'N/A'}</span>
                             <span className='flex items-center text-sm'><AiFillStar className='text-xl mr-1' /> {data.data.vote_average.toFixed(2)}<span className='text-xs font-sans italic opacity-70'>/10</span></span>
-                            <button className='flex items-center gap-4 uppercase tracking-[4px] group'>Trailer <SlArrowRight className='text-xl group-hover:translate-x-1 transition-transform duration-300' /></button>
+                            <button onClick={() => handleClickTrailer(mediaType, data.data.id)} className='flex items-center gap-4 uppercase tracking-[4px] group'>Trailer <SlArrowRight className='text-xl group-hover:translate-x-1 transition-transform duration-300' /></button>
                         </div>
                         <div className='flex items-center gap-6 flex-wrap mt-6'>
                             {
@@ -107,6 +143,7 @@ const Detail = ({ mediaType }: Props) => {
                 </Wrapper>
             </div>
 
+            <VideoModal requestClosePopup={handleRequestClosePopup} show={showPopup} embed={trailer ? `https://www.youtube.com/embed/${queryVideos.data?.data.results[0].key || ""}` : "#"} />
         </div >
     )
 }
