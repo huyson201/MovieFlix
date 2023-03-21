@@ -21,3 +21,8 @@ export const urlMap = {
     "tv": "/tv-series",
     "search": "/search"
 }
+
+export const siteMap = {
+    "YouTube": "https://www.youtube.com/embed/",
+    "Vimeo": "https://vimeo.com/"
+}

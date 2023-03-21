@@ -16,6 +16,7 @@ import { Link } from 'react-router-dom';
 import { VideoResult } from '../../Types/Video';
 import HeroSlide from '../../components/HeroSlide/HeroSlide';
 import VideoModal from '../../components/VideoModal/VideoModal';
+import { siteMap } from '../../Types/common';
 
 type Props = {}
 
@@ -178,7 +179,7 @@ const Home = (props: Props) => {
 
             </div>
 
-            <VideoModal requestClosePopup={handleRequestClosePopup} show={showPopup} embed={trailer ? `https://www.youtube.com/embed/${queryVideos.data?.data.results[0].key || ""}` : "#"} />
+            <VideoModal requestClosePopup={handleRequestClosePopup} show={showPopup} embed={trailer ? `${queryVideos.data?.data.results[0].site === "YouTube" ? siteMap.YouTube : siteMap.Vimeo || ""}${queryVideos.data?.data.results[0].key || ""}` : "#"} />
         </div>
     )
 }
