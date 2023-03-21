@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query'
 import tmdbApi from '../../services/tmdbApi'
 import GridContainer from '../../components/GridContainer/GridContainer'
 import { Movie, TV } from '../../Types/Movie'
-import HorizontalCard from '../../components/HorizontalCard/HorizontalCard'
+import Card from '../../components/Card/Card'
 import Pagination from '../../components/Pagination/Pagination'
 import { useSearchParams } from 'react-router-dom'
 import axios, { AxiosError } from 'axios'
@@ -103,7 +103,7 @@ const Search = (props: Props) => {
                             data?.data.results.map(el => {
                                 if (!el.poster_path) return null
                                 return (
-                                    <HorizontalCard key={el.id.toString()} data={el} mediaType={media} />
+                                    <Card key={el.id.toString()} data={el} mediaType={media} />
                                 )
                             })
                         }

@@ -104,6 +104,6 @@
     @apply right-0 xs:left-0;
 }
 
-a{
+a, button{
     -webkit-tap-highlight-color: transparent;
 }

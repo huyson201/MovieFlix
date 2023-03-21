@@ -15,7 +15,7 @@ type Props = {
 
 
 
-const HorizontalCard = ({ data, mediaType, size = 'large' }: Props) => {
+const Card = ({ data, mediaType, size = 'large' }: Props) => {
     let parserData = useMemo(() => {
         let name: string
         let media_type: MediaType
@@ -68,4 +68,4 @@ const HorizontalCard = ({ data, mediaType, size = 'large' }: Props) => {
     )
 }
 
-export default HorizontalCard
+export default Card

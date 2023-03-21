@@ -8,7 +8,7 @@ import GridContainer from '../../components/GridContainer/GridContainer';
 import tmdbApi, { TmdbMediaType } from '../../services/tmdbApi';
 import { Movie, TV } from '../../Types/Movie';
 import ListMovieHorizontal from '../../components/ListMovieHorizontal/ListMovieHorizontal';
-import HorizontalCard from '../../components/HorizontalCard/HorizontalCard';
+import Card from '../../components/Card/Card';
 import { useQuery } from '@tanstack/react-query';
 import { AiFillPlayCircle } from 'react-icons/ai';
 import classNames from 'classnames';
@@ -147,7 +147,7 @@ const Home = (props: Props) => {
                             {
                                 latestMovieQuery.data && latestMovieQuery.data.data.results.map((movie, index) => {
                                     return (
-                                        <HorizontalCard key={movie.id + `-${Math.random().toString()}`} mediaType='movie' data={movie} />
+                                        <Card key={movie.id + `-${Math.random().toString()}`} mediaType='movie' data={movie} />
                                     )
                                 })
                             }
@@ -167,7 +167,7 @@ const Home = (props: Props) => {
                                 latestTVQuery.data && latestTVQuery.data.data.results.map((tv, index) => {
                                     if (!tv.poster_path) return
                                     return (
-                                        <HorizontalCard key={tv.id + `-${Math.random().toString()}`} mediaType='tv' data={tv} />
+                                        <Card key={tv.id + `-${Math.random().toString()}`} mediaType='tv' data={tv} />
                                     )
                                 })
                             }

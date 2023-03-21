@@ -1,13 +1,12 @@
 import React, { useEffect, useMemo } from 'react'
 import Wrapper from '../../components/Wrapper/Wrapper'
-import GridCard from '../../components/GridCard/GridCard'
 import Pagination from '../../components/Pagination/Pagination'
 import { useQuery } from '@tanstack/react-query'
 import tmdbApi from '../../services/tmdbApi'
 import { Movie, TV } from '../../Types/Movie'
 import { useSearchParams } from 'react-router-dom'
 import FilterBar, { FilterData } from '../../components/FilterBar/FilterBar'
-import HorizontalCard from '../../components/HorizontalCard/HorizontalCard'
+import Card from '../../components/Card/Card'
 import axios, { AxiosError } from 'axios'
 import Error404Page from '../Error/Error404Page'
 import Error500Page from '../Error/Error500Page'
@@ -98,7 +97,7 @@ const ListMovie = ({ media_type }: Props) => {
                         {
                             data && data.data.results.map((item, index) => {
                                 return (
-                                    <HorizontalCard data={item} mediaType={media_type} key={item.id + `${Math.random().toString()}`} />
+                                    <Card data={item} mediaType={media_type} key={item.id + `${Math.random().toString()}`} />
                                 )
                             })
                         }
