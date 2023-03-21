@@ -13,6 +13,7 @@ import { useSearchParams } from 'react-router-dom'
 import axios, { AxiosError } from 'axios'
 import Error404Page from '../Error/Error404Page'
 import Error500Page from '../Error/Error500Page'
+import Loader from '../../components/Loader/Loader'
 
 type Props = {}
 
@@ -23,15 +24,16 @@ const Search = (props: Props) => {
 
     const [searchParams, setSearchParams] = useSearchParams()
 
-    const page = useMemo(() => {
+    const params = useMemo(() => {
         let currPage = parseInt(searchParams.get("page") || "1")
-        return currPage
+        let search = searchParams.get("q") || ""
+        return {
+            page: currPage,
+            search
+        }
     }, [searchParams])
 
-    const search = useMemo(() => {
-        let search = searchParams.get("q")
-        return search
-    }, [searchParams])
+
 
     const handleSelect = (media: "movie" | "tv") => {
         setMedia(media)
@@ -50,9 +52,9 @@ const Search = (props: Props) => {
     }
 
     const { data, error } = useQuery({
-        queryKey: [`search`, media, search, page],
-        queryFn: () => tmdbApi.search<Movie | TV>(media, searchKey, { page }),
-        enabled: search !== null
+        queryKey: [`search`, media, params],
+        queryFn: () => tmdbApi.search<Movie | TV>(media, params.search, { page: params.page }),
+        enabled: params.search !== ""
     })
 
     useEffect(() => {
@@ -66,6 +68,8 @@ const Search = (props: Props) => {
 
         return <Error500Page />
     }
+
+
     return (
         <div className='pt-20 pb-12 min-h-[100vh] bg-black-2'>
             <Wrapper>
@@ -110,7 +114,7 @@ const Search = (props: Props) => {
                     </GridContainer>
                 </div>
 
-                {data && <Pagination defaultCurrent={1} className='mt-12' total={data?.data.total_pages} pageSize={20} />}
+                {data && <Pagination defaultCurrent={1} className='mt-12' total={data && data.data.total_pages > 500 ? 10000 : (data?.data.total_results / 20)} pageSize={20} />}
             </Wrapper>
 
 

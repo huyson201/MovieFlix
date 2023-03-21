@@ -10,6 +10,7 @@ import Card from '../../components/Card/Card'
 import axios, { AxiosError } from 'axios'
 import Error404Page from '../Error/Error404Page'
 import Error500Page from '../Error/Error500Page'
+import Loader from '../../components/Loader/Loader'
 
 
 type Props = {
@@ -53,19 +54,12 @@ const ListMovie = ({ media_type }: Props) => {
 
 
 
-    const { data, error } = useQuery({
+    const { data, error, isError, isLoading } = useQuery({
         queryKey: [`latest_${media_type}`, params],
         queryFn: () => tmdbApi.getDiscoverList<Movie | TV>(media_type, params),
-        keepPreviousData: true
+        keepPreviousData: true,
+        retry: 2
     })
-
-    if (error) {
-        if (axios.isAxiosError(error && (error as AxiosError).response?.status === 404)) {
-            return <Error404Page />
-        }
-
-        return <Error500Page />
-    }
 
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: "smooth" })
@@ -82,6 +76,19 @@ const ListMovie = ({ media_type }: Props) => {
 
         setSearchParams({ ...searchParams, ...search })
     }
+
+    if (!data || isError && error) {
+        if (axios.isAxiosError(error && (error as AxiosError).response?.status === 404)) {
+            return <Error404Page />
+        }
+
+        return <Error500Page />
+    }
+
+    if (isLoading) {
+        return <Loader />
+    }
+
 
     return (
         <div className='pt-20 pb-12 bg-black-2'>
@@ -104,7 +111,7 @@ const ListMovie = ({ media_type }: Props) => {
                     </div>
 
 
-                    <Pagination total={data?.data.total_pages} pageSize={20} defaultCurrent={1} className='mt-6 w-fully' />
+                    <Pagination total={data && data.data.total_pages > 500 ? 10000 : (data?.data.total_results / 20)} pageSize={20} defaultCurrent={1} className='mt-6 w-fully' />
                 </Wrapper>
             </section>
         </div>
