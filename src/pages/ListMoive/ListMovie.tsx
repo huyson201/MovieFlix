@@ -11,6 +11,7 @@ import axios, { AxiosError } from 'axios'
 import Error404Page from '../Error/Error404Page'
 import Error500Page from '../Error/Error500Page'
 import Loader from '../../components/Loader/Loader'
+import SkeletonCard from '../../components/Skeleton/SkeletonCard'
 
 
 type Props = {
@@ -78,16 +79,12 @@ const ListMovie = ({ media_type }: Props) => {
         setSearchParams({ ...searchParams, ...search })
     }
 
-    if (!data || isError && error) {
+    if (isError && error) {
         if (axios.isAxiosError(error && (error as AxiosError).response?.status === 404)) {
             return <Error404Page />
         }
 
         return <Error500Page />
-    }
-
-    if (isLoading) {
-        return <Loader />
     }
 
 
@@ -101,7 +98,16 @@ const ListMovie = ({ media_type }: Props) => {
 
                     {/* filter opts */}
                     <FilterBar media_type={media_type} onFilter={handleOnFilter} />
+
                     <div className='grid gap-y-8 gap-x-4 md:grid-cols-5 sm:grid-cols-4 xs:grid-cols-3 grid-cols-2 lg:grid-cols-6 mt-8'>
+
+                        {
+                            isLoading && new Array(14).fill(0).map((_, index) => {
+                                return (
+                                    <SkeletonCard key={index.toString() + "all"} />
+                                )
+                            })
+                        }
                         {
                             data && data.data.results.map((item, index) => {
                                 return (
@@ -112,7 +118,8 @@ const ListMovie = ({ media_type }: Props) => {
                     </div>
 
 
-                    <Pagination total={data && data.data.total_pages > 500 ? 10000 : (data?.data.total_results / 20)} pageSize={20} defaultCurrent={1} className='mt-6 w-fully' />
+                    {data && <Pagination total={data && data.data.total_pages > 500 ? 10000 : Math.floor(data?.data.total_results / 20)} pageSize={20} defaultCurrent={1} className='mt-6 w-fully' />}
+
                 </Wrapper>
             </section>
         </div>

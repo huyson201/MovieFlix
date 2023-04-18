@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 
 import { MdKeyboardArrowRight, MdLiveTv } from 'react-icons/md'
@@ -17,6 +17,7 @@ import { VideoResult } from '../../Types/Video';
 import HeroSlide from '../../components/HeroSlide/HeroSlide';
 import VideoModal from '../../components/VideoModal/VideoModal';
 import { siteMap } from '../../Types/common';
+import SkeletonCard from '../../components/Skeleton/SkeletonCard';
 
 type Props = {}
 
@@ -69,10 +70,10 @@ const Home = (props: Props) => {
         setShowPopup(false)
     }
 
-    const handleClickTrailer = (media_type: TmdbMediaType, id: number) => {
+    const handleClickTrailer = useCallback((media_type: TmdbMediaType, id: number) => {
         setTrailer({ mediaType: media_type, id })
         setShowPopup(true)
-    }
+    }, [trendingQuery.data])
 
 
 
@@ -100,6 +101,9 @@ const Home = (props: Props) => {
                         {
                             trendingQuery.data && <ListMovieHorizontal mediaType='all' className='pb-8 pt-6' data={trendingQuery.data?.data.results.slice(5)} />
                         }
+                        {
+                            trendingQuery.isLoading && <ListMovieHorizontal mediaType='all' className='pb-8 pt-6' data={[]} skeleton />
+                        }
                     </Wrapper>
 
                 </section>
@@ -115,6 +119,9 @@ const Home = (props: Props) => {
                         </h2>
                         {
                             topRatedQuery.data && <ListMovieHorizontal mediaType={topRatingSelect} className='pb-8 pt-6' data={(topRatedQuery.data.data.results as Movie[]) || (topRatedQuery.data.data.results as TV[]) || []} />
+                        }
+                        {
+                            topRatedQuery.isLoading && <ListMovieHorizontal mediaType='all' className='pb-8 pt-6' data={[]} skeleton />
                         }
                     </Wrapper>
 
@@ -132,11 +139,14 @@ const Home = (props: Props) => {
                         {
                             popularQuery.data && <ListMovieHorizontal mediaType={popularSelect} className='pb-8 pt-6' data={(popularQuery.data.data.results as Movie[]) || (popularQuery.data.data.results as TV[]) || []} />
                         }
+                        {
+                            popularQuery.isLoading && <ListMovieHorizontal mediaType='all' className='pb-8 pt-6' data={[]} skeleton />
+                        }
                     </Wrapper>
 
                 </section>
 
-
+                {/* latest movies */}
                 <section className='top-rated py-6 bg-black-2'>
                     <Wrapper>
                         <h2 className='text-light-gray flex py-1 text-2xl relative after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-16 after:h-[1px] after:bg-white/40'>
@@ -152,10 +162,19 @@ const Home = (props: Props) => {
                                     )
                                 })
                             }
+
+                            {
+                                latestMovieQuery.isLoading && new Array(14).fill(0).map((_, index) => {
+                                    return (
+                                        <SkeletonCard key={index.toString() + "movies"} />
+                                    )
+                                })
+                            }
                         </GridContainer>
                     </Wrapper>
                 </section>
 
+                {/* latest tv-series */}
                 <section className='top-rated py-6 bg-black-2'>
                     <Wrapper>
                         <h2 className='text-light-gray flex py-1 text-2xl relative after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-16 after:h-[1px] after:bg-white/40'>
@@ -169,6 +188,14 @@ const Home = (props: Props) => {
                                     if (!tv.poster_path) return
                                     return (
                                         <Card key={tv.id + `-${Math.random().toString()}`} mediaType='tv' data={tv} />
+                                    )
+                                })
+                            }
+
+                            {
+                                latestTVQuery.isLoading && new Array(14).fill(0).map((_, index) => {
+                                    return (
+                                        <SkeletonCard key={index.toString() + "tv-series"} />
                                     )
                                 })
                             }

@@ -52,8 +52,7 @@ const Card = ({ data, mediaType, size = 'large' }: Props) => {
         <div className="card hover:scale-105 transition-transform duration-300 overflow-hidden rounded-xl" >
             <Link to={`${urlMap[parserData.media_type]}/${encodeURIComponent(parserData.name?.toLowerCase()).replace(/%20/g, '-') || ""}/${data.id}`} className='w-full block h-full'>
                 <div className={classNames(`list__card-content`, { 'h-60': size === 'normal', 'h-[280px]': size === 'large' })}>
-                    {/* <img className='w-full h-full block object-cover' src={originalImage(data.poster_path)} alt="card" /> */}
-                    <LazyLoadImage wrapperClassName='w-full h-full block' loading='lazy' effect='blur' className='w-full h-full block object-cover' src={originalImage(data.poster_path)} alt="card" />
+                    <LazyLoadImage wrapperClassName='w-full h-full block' loading='lazy' effect='blur' className='w-full h-full block object-cover' src={originalImage(data.poster_path)} alt={data.poster_path} />
                     <div className='absolute bottom-0  py-3 left-0 w-full px-3  z-[6]'>
                         <div className='text-white block font-light text-[14px] hover:text-dark-teal transition-colors duration-300'>{parserData.name}</div>
                         <div className='flex items-end  text-light-gray text-xs'>

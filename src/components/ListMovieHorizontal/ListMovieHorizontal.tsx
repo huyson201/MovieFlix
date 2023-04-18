@@ -6,18 +6,16 @@ import Card from '../Card/Card'
 import { Movie, TV, TrendingVideo } from '../../Types/Movie'
 import { MediaType } from '../../services/tmdbApi'
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md'
+import SkeletonCard from '../Skeleton/SkeletonCard'
 
 type Props = {
     className?: string,
     data: TrendingVideo[] | Movie[] | TV[],
-    mediaType: MediaType
+    mediaType: MediaType,
+    skeleton?: boolean
 }
 
-const NextButton = () => {
-    return (<>
-        <div>Next</div>
-    </>)
-}
+
 const ListMovieHorizontal = (props: Props) => {
     const navigationPrevRef = React.useRef(null)
     const navigationNextRef = React.useRef(null)
@@ -37,8 +35,19 @@ const ListMovieHorizontal = (props: Props) => {
             className={classNames(props.className)}
 
         >
+
             {
-                props.data.map((movie, index) => {
+                props.skeleton && new Array(10).fill(0).map((_, index) => {
+                    return (
+                        <SwiperSlide key={index.toString() + "list-horizontal"} className='w-44 pr-4 self-stretch'>
+                            <SkeletonCard size='normal' />
+                        </SwiperSlide>
+                    )
+                })
+            }
+
+            {
+                !props.skeleton && props.data.map((movie, index) => {
                     if (!movie.poster_path) return
                     return (
                         <SwiperSlide className='w-44 pr-4 self-stretch' key={movie.id.toString() + `-${Math.random()}`}>

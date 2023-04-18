@@ -5,22 +5,16 @@ declare module 'axios' {
     export interface AxiosResponse<T = any> extends Promise<T> { }
 
 }
+
+
 const axiosInstance = axios.create({
     baseURL: API_BASE_URL,
     headers: {
         "Content-Type": "application/json"
+    },
+    params: {
+        ["api_key"]: API_KEY
     }
 })
 
-axiosInstance.interceptors.request.use(config => {
-
-    let params = config.params
-    if (!params) {
-        params = {}
-    }
-    params["api_key"] = API_KEY
-    config.params = params
-
-    return config
-})
 export default axiosInstance
