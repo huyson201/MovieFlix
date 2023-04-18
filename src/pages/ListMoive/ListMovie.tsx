@@ -17,6 +17,7 @@ type Props = {
     media_type: "movie" | "tv"
 }
 
+
 const ListMovie = ({ media_type }: Props) => {
     const [searchParams, setSearchParams] = useSearchParams()
 
