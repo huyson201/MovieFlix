@@ -16,16 +16,16 @@ const Pagination = ({ pageSize, total, defaultCurrent, ...props }: Props) => {
     const [searchParams, setSearchParams] = useSearchParams()
 
     const onChange = (page: number, pageSize: number) => {
-        console.log("change")
-        searchParams.set("page", `${page}`)
+        searchParams.set("page", page + "");
         setSearchParams(searchParams)
+        window.scrollTo({ top: 0 })
     };
 
     const currentPage = useMemo(() => {
-        console.log(total, pageSize, defaultCurrent)
         let page = parseInt(searchParams.get('page') || '1')
         return page
     }, [searchParams])
+
 
     return (
         <div className={classNames(props.className)}>

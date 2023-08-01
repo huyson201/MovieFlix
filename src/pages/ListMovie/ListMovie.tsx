@@ -63,9 +63,7 @@ const ListMovie = ({ media_type }: Props) => {
         retry: 2
     })
 
-    useEffect(() => {
-        window.scrollTo({ top: 0, behavior: "smooth" })
-    }, [data])
+
 
 
     const handleOnFilter = (data: FilterData) => {
@@ -118,7 +116,7 @@ const ListMovie = ({ media_type }: Props) => {
                     </div>
 
 
-                    {data && <Pagination total={data && data.data.total_pages > 500 ? 10000 : Math.floor(data?.data.total_results / 20)} pageSize={20} defaultCurrent={1} className='mt-6 w-fully' />}
+                    {data && <Pagination total={data.data.total_pages > 500 ? 10000 : data.data.total_results} pageSize={20} defaultCurrent={1} className='mt-6 w-fully' />}
 
                 </Wrapper>
             </section>

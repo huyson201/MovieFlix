@@ -4,14 +4,22 @@ import 'react-loading-skeleton/dist/skeleton.css'
 import { Outlet } from 'react-router-dom'
 import NavBar from './components/NavBar/NavBar'
 import Footer from './components/Footer/Footer'
+import Form from './components/Form/Form';
+import ContextProvider from './context/ContextProvider';
+import Backdrop from './components/Backdrop/Backdrop';
+import RotatingLoader from './components/Loader/RotatingLoader';
 
 function App() {
-
   return (
     <div className="App">
-      <NavBar />
-      <Outlet />
-      <Footer />
+      <ContextProvider>
+        <NavBar />
+        <Outlet />
+        <Footer />
+        <Form />
+        <Backdrop />
+        <RotatingLoader />
+      </ContextProvider>
     </div>
   )
 }

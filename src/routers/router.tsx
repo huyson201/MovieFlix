@@ -5,11 +5,12 @@ import {
 import App from "../App";
 import { lazy, Suspense } from "react";
 import Loader from "../components/Loader/Loader";
-
-const ListMovie = lazy(() => import("../pages/ListMoive/ListMovie"))
+const ListMovie = lazy(() => import("../pages/ListMovie/ListMovie"))
 const Home = lazy(() => import("../pages/Home/Home"))
 const Detail = lazy(() => import("../pages/Detail/Detail"))
 const Search = lazy(() => import("../pages/Search/Search"))
+const Favorite = lazy(() => import("../pages/Favorite/Favorite"))
+const Profile = lazy(() => import("../pages/Profile/Profile"))
 const Error404Page = lazy(() => import("../pages/Error/Error404Page"))
 
 const routeObj: RouteObject[] = [
@@ -20,6 +21,14 @@ const routeObj: RouteObject[] = [
       {
         index: true,
         element: <Suspense fallback={<Loader />}> <Home /></Suspense>
+      },
+      {
+        path: "/favorites",
+        element: <Suspense fallback={<Loader />}><Favorite /></Suspense>
+      },
+      {
+        path: "/profile",
+        element: <Suspense fallback={<Loader />}><Profile /></Suspense>
       },
       {
         path: "/movies/:name/:id",
@@ -41,6 +50,7 @@ const routeObj: RouteObject[] = [
         path: "/search",
         element: <Suspense fallback={<Loader />}><Search /></Suspense>
       }
+
     ]
   },
   {

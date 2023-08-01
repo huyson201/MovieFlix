@@ -58,8 +58,13 @@
 /* list movie */
 
 .list__card-content{
-    @apply w-full relative  after:content-[""] after:top-0 
-    after:left-0 after:absolute after:w-full after:h-full after:z-[5]  after:bg-gradient-to-t from-black/90  to-black/10;
+    @apply w-full relative hover:before:opacity-100  after:content-[""] after:top-0 
+    after:left-0 after:absolute after:w-full after:h-full after:z-[5] 
+    after:bg-gradient-to-t from-black/90  to-black/10
+    before:content-[""] before:absolute before:left-0 before:top-0 before:w-full before:h-full 
+    before:z-[6] before:bg-black/70 before:opacity-0
+    before:transition-all before:duration-300;
+    
 }
 
 /* detail page */
@@ -82,7 +87,9 @@
 .rc-pagination-jump-next-custom-icon{
     @apply text-[#6b747c] tracking-widest
 }
-
+.rc-pagination-disabled{
+    display: none;
+}
 .checkbox:checked ~ label::before{
     content: none;
 } 
@@ -106,4 +113,20 @@
 
 a, button{
     -webkit-tap-highlight-color: transparent;
+}
+/* slide animation */
+
+.slide-animation{
+    animation: slide 0.5s forwards;
+}
+
+@keyframes slide {
+    0%{
+        opacity: 0;
+        transform: translateX(-50%) translateY(-100%);
+    }
+    100%{
+        opacity: 1;
+        transform: translateX(-50%) translateY(-50%);
+    }
 }

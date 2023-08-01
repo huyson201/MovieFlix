@@ -7,20 +7,25 @@ import classnames from 'classnames'
 import { Link, NavLink, useMatches } from 'react-router-dom'
 import { urlMap } from '../../Types/common'
 import Logo from '../Logo/Logo'
-type Props = {}
+import { AuthState } from '../../context/auth/auth.context'
+import UserDropdown from './UserDropdown'
+import SignInButton from '../SignInButton/SignInButton'
+import withAuth from '../../HOC/withAuth'
+type Props = {
+    auth: AuthState | null
+}
 
-const NavBar = (props: Props) => {
+const NavBar = ({ auth }: Props) => {
     const [showNav, setShowNav] = useState<boolean>(false)
     const navRef = useRef<HTMLDivElement>(null)
     const matches = useMatches()
 
-    const navDark: boolean = useMemo(() => {
+    const darkNav: boolean = useMemo(() => {
         return matches.some(route => (Object.keys(urlMap) as Array<keyof typeof urlMap>).some(key => route.pathname === urlMap[key]))
     }, [matches])
 
     useEffect(() => {
         const handleClickOutside = (event: any) => {
-            if (navRef.current && navRef.current.contains(event.target)) return
             if (navRef.current && navRef.current.contains(event.target)) return
             setShowNav(false)
         }
@@ -29,10 +34,10 @@ const NavBar = (props: Props) => {
         return () => {
             document.removeEventListener("click", handleClickOutside)
         }
-    })
+    }, [])
 
     return (
-        <header className={classnames('header py-3 absolute top-0 left-0 w-full z-10', { 'bg-black': navDark })}>
+        <header className={classnames('header py-3 absolute top-0 left-0 w-full z-10 md:z-[6]', { 'bg-black': darkNav })}>
             <Wrapper className='flex flex-row  items-center'>
                 <button className='btn-bars text-4xl text-white mr-4 inline-block md:hidden duration-300 transition-colors hover:text-dark-teal' onClick={(event: MouseEvent) => { event.stopPropagation(); setShowNav(true) }}><HiBars3BottomLeft /></button>
                 <Logo />
@@ -45,16 +50,17 @@ const NavBar = (props: Props) => {
                 <Link to='/search' className="search-box group ml-auto w-9 h-9 rounded-full flex justify-center items-center transition duration-300 ease-in-out hover:bg-white bg-white/10">
                     <AiOutlineSearch size={20} className='text-white/50 group-hover:text-gray-500' />
                 </Link>
+                {
+                    !auth?.isLogged ? (
+                        <SignInButton className='text-sm h-9 w-9 md:w-auto px-2 ml-2' textClass='hidden md:inline-block' />
+                    ) : (
+                        <UserDropdown avatar_url={auth.authProfile?.avatar_url || ''} user_name={auth.authProfile ? `${auth.authProfile.first_name} ${auth.authProfile.last_name}` : ''} />
+                    )
+                }
 
-                {/* <div className="login-logout ml-2 md:ml-6 lg:ml-6 flex items-center group cursor-pointer">
-                    <FaUserCircle className='mr-2 text-white/90' size={32} />
-                    <span className='text-white/50 group-hover:text-white duration-300 transition-colors md:inline hidden'>Login</span>
-                    <span className='text-white/50 mx-1 group-hover:text-white duration-300 transition-colors md:inline hidden'>/</span>
-                    <span className='text-white/50 group-hover:text-white duration-300 transition-colors md:inline hidden'>Register</span>
-                </div> */}
             </Wrapper>
         </header>
     )
 }
 
-export default NavBar
+export default withAuth(NavBar)

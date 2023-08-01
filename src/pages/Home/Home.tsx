@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 
 import { MdKeyboardArrowRight, MdLiveTv } from 'react-icons/md'
@@ -28,6 +28,7 @@ const Home = (props: Props) => {
     const [showPopup, setShowPopup] = useState<boolean>(false)
 
 
+
     const trendingQuery = useQuery({
         queryKey: ["trending"],
         queryFn: () => tmdbApi.getTrendingMovies()
@@ -37,7 +38,8 @@ const Home = (props: Props) => {
     const topRatedQuery = useQuery({
         queryKey: ["top_rated", topRatingSelect],
         queryFn: () => tmdbApi.getList<Movie | TV>(topRatingSelect, "top_rated"),
-        keepPreviousData: true
+        keepPreviousData: true,
+
 
     })
 
@@ -65,6 +67,10 @@ const Home = (props: Props) => {
         keepPreviousData: false
     })
 
+    const trendingData = useMemo(() => {
+        return trendingQuery.data?.data.results.slice(5)
+    }, [trendingQuery.data])
+
     const handleRequestClosePopup = () => {
         setTrailer(undefined)
         setShowPopup(false)
@@ -86,7 +92,7 @@ const Home = (props: Props) => {
                 {/* about info */}
                 <section className="about py-3">
                     <Wrapper>
-                        <h2 className='text-light-gray text-xl'>Watch Movies Online Free</h2>
+                        <h1 className='text-light-gray text-xl'>Watch Movies Online Free</h1>
                         <p className='text-light-gray text-xs sm:text-sm mt-2'><span className='text-white text-sm'>Movie<span className='text-dark-teal'>Flix</span></span> - Just a better place to watch movies online for free. It allows you to watch movies online in high quality for free. No registration is required. The content is updated daily with fast streaming servers, multi-language subtitles supported. Just open fmovies.to and watch your favorite movies, tv-shows. We have almost any movie, tv-shows you want to watch!</p>
                         <p className='text-light-gray mt-2 text-xs sm:text-sm'>Please help us by sharing this site with your friends. Thanks!</p>
                         <SocialList className='mt-2' />
@@ -94,12 +100,12 @@ const Home = (props: Props) => {
                 </section>
 
 
-
+                {/* top trending */}
                 <section >
                     <Wrapper>
                         <h2 className='text-light-gray py-1 text-2xl relative after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-16 after:h-[1px] after:bg-white/40'>Top Trending </h2>
                         {
-                            trendingQuery.data && <ListMovieHorizontal mediaType='all' className='pb-8 pt-6' data={trendingQuery.data?.data.results.slice(5)} />
+                            trendingQuery.data && <ListMovieHorizontal mediaType='all' className='pb-8 pt-6' data={trendingData || []} />
                         }
                         {
                             trendingQuery.isLoading && <ListMovieHorizontal mediaType='all' className='pb-8 pt-6' data={[]} skeleton />
@@ -108,6 +114,7 @@ const Home = (props: Props) => {
 
                 </section>
 
+                {/* top rating */}
                 <section >
                     <Wrapper>
                         <h2 className='text-light-gray flex-col xs:flex-row gap-x-6 gap-y-4 flex  py-1 text-2xl relative  '>
@@ -127,6 +134,7 @@ const Home = (props: Props) => {
 
                 </section>
 
+                {/* popular */}
                 <section >
                     <Wrapper>
                         <h2 className='text-light-gray flex-col xs:flex-row gap-x-6 gap-y-4 flex-wrap flex py-1 text-2xl'>
@@ -206,6 +214,7 @@ const Home = (props: Props) => {
 
             </div>
 
+            {/* Login / Register form */}
             <VideoModal requestClosePopup={handleRequestClosePopup} show={showPopup} embed={trailer ? `${queryVideos.data?.data.results[0].site === "YouTube" ? siteMap.YouTube : siteMap.Vimeo || ""}${queryVideos.data?.data.results[0].key || ""}` : "#"} />
         </div>
     )

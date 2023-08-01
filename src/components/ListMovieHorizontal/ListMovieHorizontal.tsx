@@ -17,10 +17,28 @@ type Props = {
 
 
 const ListMovieHorizontal = memo((props: Props) => {
-    const navigationPrevRef = React.useRef(null)
-    const navigationNextRef = React.useRef(null)
+    const navigationPrevRef = React.useRef<HTMLDivElement>(null)
+    const navigationNextRef = React.useRef<HTMLDivElement>(null)
     const swiperRef = useRef<SwiperType>();
 
+    const handleSlideChange = (swiper: SwiperType) => {
+        if (!swiperRef.current || !navigationNextRef.current || !navigationPrevRef.current) return
+
+        if (swiper.isBeginning) {
+            navigationPrevRef.current?.classList.remove("active")
+        }
+        else {
+            navigationPrevRef.current.classList.add("active")
+        }
+
+
+        if (swiper.activeIndex === swiper.slides.length - 2) {
+            navigationNextRef.current.classList.remove("active")
+        }
+        else {
+            navigationNextRef.current.classList.add("active")
+        }
+    }
     return (
 
         <Swiper
@@ -32,8 +50,8 @@ const ListMovieHorizontal = memo((props: Props) => {
             onBeforeInit={(swiper) => {
                 swiperRef.current = swiper;
             }}
-            loop
             className={classNames(props.className)}
+            onSlideChange={handleSlideChange}
 
         >
 
@@ -57,8 +75,8 @@ const ListMovieHorizontal = memo((props: Props) => {
                     )
                 })
             }
-            <div ref={navigationNextRef} onClick={() => swiperRef.current?.slideNext()} className='absolute w-28 h-28 bg-black/30 pl-1 hover:bg-black transition duration-300 rounded-full translate-x-[65%] flex justify-start items-center cursor-pointer top-2/4 right-0 -translate-y-2/4 hover:text-white text-white/30 z-10 text-4xl'><MdKeyboardArrowRight /></div>
-            <div ref={navigationPrevRef} onClick={() => swiperRef.current?.slidePrev()} className='absolute w-28 h-28 bg-black/30 pr-1 hover:bg-black transition duration-300 rounded-full -translate-x-[65%] flex justify-end items-center cursor-pointer top-2/4 left-0 -translate-y-2/4 hover:text-white text-white/30 z-10 text-4xl'><MdKeyboardArrowLeft /> </div>
+            <div ref={navigationNextRef} onClick={() => swiperRef.current?.slideNext()} className='absolute w-28 h-28 bg-black/30 pl-1 [&.active]:flex hover:bg-black transition duration-300 rounded-full translate-x-[65%] hidden active justify-start items-center cursor-pointer top-2/4 right-0 -translate-y-2/4 hover:text-white text-white/30 z-10 text-4xl'><MdKeyboardArrowRight /></div>
+            <div ref={navigationPrevRef} onClick={() => swiperRef.current?.slidePrev()} className='absolute w-28 h-28 bg-black/30 pr-1 [&.active]:flex hover:bg-black transition duration-300 rounded-full -translate-x-[65%] hidden  justify-end items-center cursor-pointer top-2/4 left-0 -translate-y-2/4 hover:text-white text-white/30 z-10 text-4xl'><MdKeyboardArrowLeft /> </div>
         </Swiper>
     )
 })

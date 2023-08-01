@@ -4,7 +4,7 @@ import { BsClockHistory } from 'react-icons/bs'
 import { AiFillStar } from 'react-icons/ai'
 import { SlArrowRight } from 'react-icons/sl'
 import tmdbApi, { TmdbMediaType } from '../../services/tmdbApi'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useLocation, useParams } from 'react-router-dom'
 import { DetailMovie, DetailTV, Movie, TV, TrendingVideo } from '../../Types/Movie'
 import { originalImage } from '../../services/apiConfigs'
@@ -18,16 +18,26 @@ import Error500Page from '../Error/Error500Page'
 import Loader from '../../components/Loader/Loader'
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import SkeletonDetail from '../../components/Skeleton/SkeletonDetail'
+import { MdOutlineFavorite, MdOutlineFavoriteBorder } from 'react-icons/md'
+import withAuth from '../../HOC/withAuth'
+import { AuthState } from '../../context/auth/auth.context'
+import authServices from '../../services/axiosBackend/auth/auth.services'
+import { useForm } from '../../context/form/form.context'
+import { useRotatingLoader } from '../../context/RotatingLoader/RotatingLoader.context'
 
 type Props = {
     mediaType: TmdbMediaType
 }
 
-const Detail = ({ mediaType }: Props) => {
+const Detail = ({ mediaType, auth }: Props & { auth: AuthState | null }) => {
     const [trailer, setTrailer] = useState<{ mediaType: TmdbMediaType, id: number }>()
     const [showPopup, setShowPopup] = useState<boolean>(false)
     const { id } = useParams()
     const location = useLocation()
+    const formLogin = useForm()
+    const queryClient = useQueryClient()
+    const rotatingLoader = useRotatingLoader()
+
     if (!id || !Number(id)) return <Error404Page />
 
     const { data, status, error, isFetching, isFetched } = useQuery({
@@ -72,10 +82,56 @@ const Detail = ({ mediaType }: Props) => {
         return <Error500Page />
     }
 
+    const checkAddedToFavorite = useQuery({
+        queryKey: ["detail", { id, mediaType }, "check-favorite"],
+        queryFn: () => authServices.checkAddedToFavorite({ id: id + "", type: mediaType }),
+        enabled: auth !== null && auth?.isLogged
+    })
+
+    const toggleFavoriteMutation = useMutation({
+        mutationFn: ({ id, type }: { type: TmdbMediaType; id: string }) => {
+            rotatingLoader?.showLoader()
+            if (checkAddedToFavorite.data?.data.added) {
+                return authServices.removeFavorite({ id, type })
+            }
+            return authServices.addFavorite({ id, type })
+        },
+        onSuccess(data, variables, context) {
+            if (!checkAddedToFavorite.data) return
+            const newData = { ...checkAddedToFavorite.data }
+            if (newData.data.added) {
+                newData.data.added = false
+            }
+            else {
+                newData.data.added = true
+            }
+            queryClient.setQueryData(["detail", { id, mediaType }, "check-favorite"], newData)
+            queryClient.invalidateQueries({ queryKey: ["favorites"] })
+            rotatingLoader?.hiddenLoader()
+            return data
+
+        },
+        onError(error, variables, context) {
+            console.log(error)
+            rotatingLoader?.hiddenLoader()
+            return error;
+        },
+    })
+
     useEffect(() => {
         window.scrollTo(0, 0)
     }, [location])
 
+    const handleToggleFavorite = () => {
+        if (!auth?.isLogged) {
+            formLogin?.requestOpenForm()
+            return
+        }
+
+        toggleFavoriteMutation.mutate({ id, type: mediaType })
+
+
+    }
 
     return (
         <div className='detail-page' >
@@ -117,9 +173,20 @@ const Detail = ({ mediaType }: Props) => {
                             <div className='mt-6 text-white text-xs lg:w-[80%]'>
                                 {data.data.overview}
                             </div>
+
+                            <div className='mt-4'>
+                                <button className='flex items-center gap-1 rounded-3xl bg-white/10
+                                px-4 py-2 transition-all duration-200 ease-in-out hover:bg-white/20' onClick={handleToggleFavorite}>
+                                    {
+                                        checkAddedToFavorite.data?.data.added ? <MdOutlineFavorite size={26} /> : <MdOutlineFavoriteBorder size={26} />
+                                    }
+                                    <span className='text-sm'>Add to favorites</span>
+                                </button>
+                            </div>
                         </div>
                     </Wrapper>
                 </div>
+
             }
             {isFetching && <SkeletonDetail />}
             <div className='bg-black-2 py-5'>
@@ -150,4 +217,4 @@ const Detail = ({ mediaType }: Props) => {
     )
 }
 
-export default Detail
+export default withAuth(Detail)
