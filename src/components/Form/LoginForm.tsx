@@ -14,7 +14,7 @@ import withAuth from '../../HOC/withAuth'
 
 interface LoginFormProps {
     onClickCreateAccount?: () => void,
-    auth: AuthState | null
+    form: FormContextType | null
 }
 
 const schema = yup.object({
@@ -22,7 +22,7 @@ const schema = yup.object({
     password: yup.string().required().min(6)
 })
 
-const LoginForm = ({ onClickCreateAccount, form, auth }: LoginFormProps & { form: FormContextType | null }) => {
+const LoginForm = ({ onClickCreateAccount, form, auth }: LoginFormProps & { auth: AuthState | null }) => {
     const [isPending, setIsPending] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
 
@@ -65,4 +65,4 @@ const LoginForm = ({ onClickCreateAccount, form, auth }: LoginFormProps & { form
     )
 }
 
-export default withAuth(withForm(LoginForm))
+export default withAuth(LoginForm)

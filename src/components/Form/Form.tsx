@@ -29,7 +29,7 @@ const Form = ({ form }: FormProps & { form: FormContextType | null }) => {
         w-[320px] p-4 xs:w-[400px] bg-black rounded xs:rounded-xl `, { active: form?.isOpen })}>
             <button className='absolute right-4 top-4' onClick={handleCloseForm}><IoClose size={26} color='#fff' /></button>
             <h2 className='text-center text-2xl xs:text-3xl mb-4 font-medium text-white'>Movie<span className='text-dark-teal'>Flix</span></h2>
-            {formType === 'login' ? <LoginForm onClickCreateAccount={() => setFormType('register')} /> : <RegisterForm onClickLoginLink={() => setFormType('login')} />}
+            {formType === 'login' ? <LoginForm form={form} onClickCreateAccount={() => setFormType('register')} /> : <RegisterForm onClickLoginLink={() => setFormType('login')} />}
         </div>
     )
 }
