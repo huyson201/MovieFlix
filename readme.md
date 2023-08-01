@@ -20,6 +20,9 @@ npm install
 ```
 Create .env and add api key:
 ```zsh
-VITE_API_KEY=api_key
+VITE_API_KEY= api_key
+VITE_BACKEND_URL= your back end api url
 ```
 Get api key here: :point_right: https://www.themoviedb.org/
+## Backend
+Download here: :point_right: https://github.com/huyson201/MovieFlix_api
