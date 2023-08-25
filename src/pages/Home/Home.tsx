@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 
 
 import { MdKeyboardArrowRight, MdLiveTv } from 'react-icons/md'
@@ -15,18 +15,16 @@ import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 import { VideoResult } from '../../Types/Video';
 import HeroSlide from '../../components/HeroSlide/HeroSlide';
-import VideoModal from '../../components/VideoModal/VideoModal';
 import { siteMap } from '../../Types/common';
 import SkeletonCard from '../../components/Skeleton/SkeletonCard';
+import { useVideoModal } from '../../context/VideoModal/VideoModal.context';
 
 type Props = {}
 
 const Home = (props: Props) => {
     const [topRatingSelect, setTopRatingSelect] = useState<"movie" | "tv">("movie")
     const [popularSelect, setPopularSelect] = useState<"movie" | "tv">("movie")
-    const [trailer, setTrailer] = useState<{ mediaType: TmdbMediaType, id: number }>()
-    const [showPopup, setShowPopup] = useState<boolean>(false)
-
+    const videoModal = useVideoModal()
 
 
     const trendingQuery = useQuery({
@@ -60,26 +58,22 @@ const Home = (props: Props) => {
     })
 
 
-    const queryVideos = useQuery({
-        queryKey: ["video", trailer],
-        queryFn: () => tmdbApi.getVideo<VideoResult>(trailer?.mediaType, trailer?.id),
-        enabled: trailer?.mediaType !== undefined && trailer.id !== undefined,
-        keepPreviousData: false
-    })
 
     const trendingData = useMemo(() => {
         return trendingQuery.data?.data.results.slice(5)
     }, [trendingQuery.data])
 
-    const handleRequestClosePopup = () => {
-        setTrailer(undefined)
-        setShowPopup(false)
-    }
 
-    const handleClickTrailer = useCallback((media_type: TmdbMediaType, id: number) => {
-        setTrailer({ mediaType: media_type, id })
-        setShowPopup(true)
-    }, [trendingQuery.data])
+
+    const handleClickTrailer = (media_type: TmdbMediaType, id: number) => {
+        tmdbApi.getVideo<VideoResult>(media_type, id)
+            .then(res => {
+                videoModal?.open(`${res.data.results[0].site === "YouTube" ? siteMap.YouTube : siteMap.Vimeo || ""}${res.data.results[0].key || ""}`)
+            })
+            .catch(error => {
+                videoModal?.open(`https://www.youtube.com`)
+            })
+    }
 
 
 
@@ -214,8 +208,6 @@ const Home = (props: Props) => {
 
             </div>
 
-            {/* Login / Register form */}
-            <VideoModal requestClosePopup={handleRequestClosePopup} show={showPopup} embed={trailer ? `${queryVideos.data?.data.results[0].site === "YouTube" ? siteMap.YouTube : siteMap.Vimeo || ""}${queryVideos.data?.data.results[0].key || ""}` : "#"} />
         </div>
     )
 }

@@ -11,11 +11,9 @@ import { originalImage } from '../../services/apiConfigs'
 import { Cast, Crew } from '../../Types/Cast'
 import ListMovieHorizontal from '../../components/ListMovieHorizontal/ListMovieHorizontal'
 import { VideoResult } from '../../Types/Video'
-import VideoModal from '../../components/VideoModal/VideoModal'
 import Error404Page from '../Error/Error404Page'
 import axios, { AxiosError } from 'axios'
 import Error500Page from '../Error/Error500Page'
-import Loader from '../../components/Loader/Loader'
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import SkeletonDetail from '../../components/Skeleton/SkeletonDetail'
 import { MdOutlineFavorite, MdOutlineFavoriteBorder } from 'react-icons/md'
@@ -24,14 +22,17 @@ import { AuthState } from '../../context/auth/auth.context'
 import authServices from '../../services/axiosBackend/auth/auth.services'
 import { useForm } from '../../context/form/form.context'
 import { useRotatingLoader } from '../../context/RotatingLoader/RotatingLoader.context'
+import FBComment from '../../components/FBComment/FBComment'
+import { useVideoModal } from '../../context/VideoModal/VideoModal.context'
+import { siteMap } from '../../Types/common'
 
 type Props = {
     mediaType: TmdbMediaType
 }
 
 const Detail = ({ mediaType, auth }: Props & { auth: AuthState | null }) => {
-    const [trailer, setTrailer] = useState<{ mediaType: TmdbMediaType, id: number }>()
-    const [showPopup, setShowPopup] = useState<boolean>(false)
+    const videoModal = useVideoModal()
+
     const { id } = useParams()
     const location = useLocation()
     const formLogin = useForm()
@@ -58,21 +59,14 @@ const Detail = ({ mediaType, auth }: Props & { auth: AuthState | null }) => {
         enabled: id !== undefined
     })
 
-    const queryVideos = useQuery({
-        queryKey: ["video", trailer],
-        queryFn: () => tmdbApi.getVideo<VideoResult>(trailer?.mediaType, trailer?.id),
-        enabled: trailer?.mediaType !== undefined && trailer.id !== undefined,
-        keepPreviousData: false
-    })
-
-    const handleRequestClosePopup = () => {
-        setTrailer(undefined)
-        setShowPopup(false)
-    }
-
     const handleClickTrailer = (media_type: TmdbMediaType, id: number) => {
-        setTrailer({ mediaType: media_type, id })
-        setShowPopup(true)
+        tmdbApi.getVideo<VideoResult>(mediaType, id)
+            .then(res => {
+                videoModal?.open(`${res.data.results[0].site === "YouTube" ? siteMap.YouTube : siteMap.Vimeo || ""}${res.data.results[0].key || ""}`)
+            })
+            .catch(error => {
+                videoModal?.open(`https://www.youtube.com`)
+            })
     }
 
     if (!data && isFetched || error) {
@@ -122,15 +116,13 @@ const Detail = ({ mediaType, auth }: Props & { auth: AuthState | null }) => {
         window.scrollTo(0, 0)
     }, [location])
 
+
     const handleToggleFavorite = () => {
         if (!auth?.isLogged) {
             formLogin?.requestOpenForm()
             return
         }
-
         toggleFavoriteMutation.mutate({ id, type: mediaType })
-
-
     }
 
     return (
@@ -189,8 +181,11 @@ const Detail = ({ mediaType, auth }: Props & { auth: AuthState | null }) => {
 
             }
             {isFetching && <SkeletonDetail />}
+
+
             <div className='bg-black-2 py-5'>
                 <Wrapper>
+                    {/* recommend video */}
                     {
                         recommendsQuery.data && recommendsQuery.data.data.results.length > 0 && <h2 className='text-light-gray text-2xl relative'>Recommends</h2>
                     }
@@ -209,12 +204,20 @@ const Detail = ({ mediaType, auth }: Props & { auth: AuthState | null }) => {
                         recommendsQuery.isFetching && <ListMovieHorizontal skeleton data={[]} mediaType='all' />
                     }
 
+
+
                 </Wrapper>
             </div>
-
-            <VideoModal requestClosePopup={handleRequestClosePopup} show={showPopup} embed={trailer ? `https://www.youtube.com/embed/${queryVideos.data?.data.results[0].key || ""}` : "#"} />
+            <div className='bg-black-2 py-5 '>
+                <Wrapper>
+                    <h2 className='text-light-gray text-2xl relative'>Comments</h2>
+                    <FBComment />
+                </Wrapper>
+            </div>
         </div >
     )
 }
+const WithAuthDetail = withAuth(Detail)
 
-export default withAuth(Detail)
+const DetailWrapper = (props: Props) => (<> <WithAuthDetail {...props} /> </>)
+export default DetailWrapper

@@ -4,6 +4,7 @@ import { FormProvider } from './form/form.context'
 import { BackdropProvider } from './backdrop/backdrop.context'
 import { AuthProvider } from './auth/auth.context'
 import RotatingLoaderProvider from './RotatingLoader/RotatingLoader.context'
+import VideoModalProvider from './VideoModal/VideoModal.context'
 
 const ContextProvider = ({ children }: { children: any }) => {
     return (
@@ -12,7 +13,9 @@ const ContextProvider = ({ children }: { children: any }) => {
                 <FormProvider>
                     <AuthProvider>
                         <RotatingLoaderProvider>
-                            {children}
+                            <VideoModalProvider>
+                                {children}
+                            </VideoModalProvider>
                         </RotatingLoaderProvider>
                     </AuthProvider>
                 </FormProvider>

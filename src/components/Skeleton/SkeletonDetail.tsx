@@ -8,7 +8,10 @@ const SkeletonDetail = (props: Props) => {
     return (
         <div className="detail" >
             <Wrapper className='relative z-[1] flex flex-col md:flex-row gap-8 md:gap-16 py-5'>
-                <Skeleton baseColor="#202020" highlightColor="#444" className="detail-card self-center rounded-2xl w-60 h-[360px]" />
+
+                <div className='flex justify-center md:justify-start'>
+                    <Skeleton baseColor="#202020" highlightColor="#444" className="detail-card rounded-2xl w-60 h-[360px]" />
+                </div>
 
                 <div className="detail-content text-white md:flex-1">
                     <Skeleton baseColor="#202020" highlightColor="#444" count={2} className="name"></Skeleton>
