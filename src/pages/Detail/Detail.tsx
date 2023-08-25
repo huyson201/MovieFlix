@@ -211,7 +211,7 @@ const Detail = ({ mediaType, auth }: Props & { auth: AuthState | null }) => {
             <div className='bg-black-2 py-5 '>
                 <Wrapper>
                     <h2 className='text-light-gray text-2xl relative'>Comments</h2>
-                    <FBComment />
+                    <FBComment key={new Date().getTime()} />
                 </Wrapper>
             </div>
         </div >
